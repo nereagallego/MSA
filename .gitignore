@@ -31,3 +31,4 @@
 *.out
 *.app
 Nori2/build/*
+Nori2/ext/*
