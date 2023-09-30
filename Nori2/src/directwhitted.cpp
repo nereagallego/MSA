@@ -41,7 +41,10 @@ public:
 			// For that, we create a ray object (shadow ray),
 			// and compute the intersection
 			
-			Ray3f shadowRay(its->p, ))
+			// Ray3f shadowRay(its.p,emitterRecord.wi);
+			// Intersection shadowIts;
+			// if (scene->rayIntersect(shadowRay, shadowIts))
+			// 	continue;
 
 			// Finally, we evaluate the BSDF. For that, we need to build
 			// a BSDFQueryRecord from the outgoing direction (the direction
