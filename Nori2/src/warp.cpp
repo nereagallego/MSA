@@ -48,25 +48,18 @@ float Warp::squareToUniformDiskPdf(const Point2f &p) {
 }
 
 Point2f Warp::squareToUniformTriangle(const Point2f& sample) {
-    // throw NoriException("Warp::squareToUniformDiskPdf() is not yet implemented!");
-    if (sample.x() > sample.y()){
-        return Point2f(1-sample.x(), sample.y());
+    if (sample.x() + sample.y() > 1) {
+        return Point2f(1 - sample.x(), 1 - sample.y());
     }
-    return Point2f(sample.x(),1-sample.y());
+    return Point2f(sample.x(), sample.y());
 }
 
 float Warp::squareToUniformTrianglePdf(const Point2f& p) {
-    // throw NoriException("Warp::squareToUniformDiskPdf() is not yet implemented!");
-    return 2 ? p.x() >= 0 and p.x() <= 1 and p.y() >= 0 and p.x() >= p.y() : 0;
+    return (p.x() >= 0 && p.y() >= 0 && p.x() <= 1.0 && p.y() <= 1.0 && p.y() + p.x() <= 1.0) ? 2 : 0;
 }
 
 
 Vector3f Warp::squareToUniformSphere(const Point2f &sample) {
-    // float theta = asin(sqrt(sample.x()));
-    // float phi = 2*M_PI*sample.y();
-
-
-    // return Vector3f(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(phi));
     float theta = 2 * M_PI * sample.x();
     float phi = acos(2 * sample.y() - 1);
 
@@ -83,14 +76,17 @@ Vector3f Warp::squareToUniformHemisphere(const Point2f &sample) {
     float phi = acos(2 * sample.y() - 1);
 
     if (theta < 0  or (theta >= M_PI and theta < 2*M_PI) ) {
-        theta = (theta + M_PI) % (2*M_PI);
+        theta = theta - M_PI;
+        // theta = (theta + M_PI) % (2*M_PI);
     }
 
     return Vector3f(sin(phi)*cos(theta), sin(phi)*sin(theta), cos(phi));
-    throw NoriException("Warp::squareToUniformHemisphere() is not yet implemented!");
+    // throw NoriException("Warp::squareToUniformHemisphere() is not yet implemented!");
 }
 
 float Warp::squareToUniformHemispherePdf(const Vector3f &v) {
+    return (v.y() >= 0) ? (1/(2*M_PI)) : 0;
+    return 1 / (2*M_PI);
     throw NoriException("Warp::squareToUniformHemispherePdf() is not yet implemented!");
 }
 
