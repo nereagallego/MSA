@@ -71,21 +71,19 @@ float Warp::squareToUniformSpherePdf(const Vector3f &v) {
     return 1 / (4*M_PI);
 }
 
+float max(float a, float b){
+    return a ? a > b : b;
+}
+
 Vector3f Warp::squareToUniformHemisphere(const Point2f &sample) {
-    float theta = 2 * M_PI * sample.x();
-    float phi = acos(2 * sample.y() - 1);
-
-    if (theta < 0  or (theta >= M_PI and theta < 2*M_PI) ) {
-        theta = theta - M_PI;
-        // theta = (theta + M_PI) % (2*M_PI);
-    }
-
-    return Vector3f(sin(phi)*cos(theta), sin(phi)*sin(theta), cos(phi));
-    // throw NoriException("Warp::squareToUniformHemisphere() is not yet implemented!");
+    float z = sample.x();
+    float r = sqrt(max(0,1-z*z));
+    float phi = 2 * M_PI * sample.y();
+    return Vector3f(r*cos(phi), r * sin(phi),z);
 }
 
 float Warp::squareToUniformHemispherePdf(const Vector3f &v) {
-    return (v.y() >= 0) ? (1/(2*M_PI)) : 0;
+    return (v.z() >= 0) ? (1/(2*M_PI)) : 0;
     return 1 / (2*M_PI);
     throw NoriException("Warp::squareToUniformHemispherePdf() is not yet implemented!");
 }
