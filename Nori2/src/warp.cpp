@@ -124,13 +124,13 @@ double angleBetweenVectors(const Vector3f vectorA, const Vector3f vectorB) {
     return thetaRad;
 }
 float Warp::squareToCosineHemispherePdf(const Vector3f &v) {
-    Vector3f northPole(0,0,1);
-    float angle = angleBetweenVectors(v,northPole);
-    if(angle <= 0){
+    if (v.x() * v.x() + v.y() * v.y() <= 1 && v.z() >= 0 && v.z() <= 1) {
+        double cosTheta = v.z(); // Cosine of the polar angle θ
+        double pdfValue = cosTheta / M_PI;
+        return pdfValue;
+    } else {
         return 0;
     }
-
-    return cos(angle) / M_PI;
     throw NoriException("Warp::squareToCosineHemispherePdf() is not yet implemented!");
 }
 
