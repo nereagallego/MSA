@@ -94,10 +94,43 @@ float Warp::squareToUniformHemispherePdf(const Vector3f &v) {
 }
 
 Vector3f Warp::squareToCosineHemisphere(const Point2f &sample) {
+    Point2f d = squareToUniformDisk(sample);
+    float z = sqrt(max(0,1-d.x()*d.x()-d.y()*d.y()));
+    return Vector3f(d.x(), d.y(), z);
     throw NoriException("Warp::squareToCosineHemisphere() is not yet implemented!");
 }
 
+double dotProduct(const Vector3f vectorA, const Vector3f vectorB) {
+    double result = 0;
+    for (size_t i = 0; i < vectorA.size(); ++i) {
+        result += vectorA[i] * vectorB[i];
+    }
+    return result;
+}
+
+double vectorMagnitude(const Vector3f vector) {
+    double sum = 0;
+    sum = vector[0] * vector[0] + vector[1] * vector[1] + vector[2] * vector[2];
+    return sqrt(sum);
+}
+
+double angleBetweenVectors(const Vector3f vectorA, const Vector3f vectorB) {
+    double dotProductValue = dotProduct(vectorA, vectorB);
+    double magnitudeA = vectorMagnitude(vectorA);
+    double magnitudeB = vectorMagnitude(vectorB);
+    
+    double cosineTheta = dotProductValue / (magnitudeA * magnitudeB);
+    double thetaRad = acos(cosineTheta);
+    return thetaRad;
+}
 float Warp::squareToCosineHemispherePdf(const Vector3f &v) {
+    Vector3f northPole(0,0,1);
+    float angle = angleBetweenVectors(v,northPole);
+    if(angle <= 0){
+        return 0;
+    }
+
+    return cos(angle) / M_PI;
     throw NoriException("Warp::squareToCosineHemispherePdf() is not yet implemented!");
 }
 
