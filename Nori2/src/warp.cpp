@@ -135,10 +135,42 @@ float Warp::squareToCosineHemispherePdf(const Vector3f &v) {
 }
 
 Vector3f Warp::squareToBeckmann(const Point2f &sample, float alpha) {
+    // Calculate the Beckmann distribution parameter
+    float u1 = sample.x();
+    float u2 = sample.y();
+
+    float tan_theta_sq = -alpha * alpha * log(1.0 - u1);
+    float cos_theta = 1.0 / sqrt(1.0 + tan_theta_sq);
+
+    // Calculate the azimuthal angle (phi)
+    float phi = 2.0 * M_PI * u2;
+
+    // Convert to spherical coordinates
+    float sin_theta = sqrt(std::max(0.0f, 1.0f - cos_theta * cos_theta));
+    Vector3f result;
+    result.x() = sin_theta * cos(phi);
+    result.y() = sin_theta * sin(phi);
+    result.z() = cos_theta;
+
+    return result;
+
     throw NoriException("Warp::squareToBeckmann() is not yet implemented!");
 }
 
 float Warp::squareToBeckmannPdf(const Vector3f &m, float alpha) {
+    // Calculate the cosine of the zenith angle (theta)
+    float cos_theta = m.z();
+
+    // The Beckmann distribution PDF
+    if (cos_theta > 0) {
+        float cos_theta_sq = cos_theta * cos_theta;
+        float tan_theta_sq = (1.0 - cos_theta_sq) / cos_theta_sq;
+        float alpha_sq = alpha * alpha;
+        float exp_term = exp(-tan_theta_sq / alpha_sq);
+        return exp_term / (M_PI * alpha_sq * cos_theta_sq * cos_theta_sq);
+    }
+    return 0.0;
+
     throw NoriException("Warp::squareToBeckmannPdf() is not yet implemented!");
 }
 
