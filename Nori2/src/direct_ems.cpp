@@ -37,6 +37,8 @@ public:
 
 		//check current its.p is emitter() then distance -> infinite
         if(its.mesh->isEmitter()) {
+            // return the power of the emitter
+            return its.mesh->getEmitter()->sample(emitterRecord, sampler->next2D(), 0.);
             return its.mesh->getEmitter()->eval(emitterRecord);
         }
 
