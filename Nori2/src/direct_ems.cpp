@@ -20,9 +20,18 @@ public:
 		Intersection its;
 		if (!scene->rayIntersect(ray, its))
 			return scene->getBackground(ray);
-
+            
 		float pdflight;
 		EmitterQueryRecord emitterRecord(its.p);
+
+        // Here perform a visibility query, to check whether the light 
+        // source "em" is visible from the intersection point. 
+        // For that, we create a ray object (shadow ray),
+        // and compute the intersection
+        Ray3f shadowRay(its.p,- emitterRecord.wi);
+        Intersection shadowIts;
+        if (scene->rayIntersect(shadowRay, shadowIts))
+            return Lo;
 
 		// Get all lights in the scene
 		const std::vector<Emitter*> lights = scene->getLights();
@@ -31,26 +40,16 @@ public:
         int lightIndex = std::min((int)(sampler->next1D() * lights.size()), (int)lights.size() - 1);
         const Emitter* em = lights[lightIndex];
 
-        // Here we sample the point sources, getting its radiance
-        // and direction. 
-        Color3f Li = em->sample(emitterRecord, sampler->next2D(), 0.);
-
 		//check current its.p is emitter() then distance -> infinite
         if(its.mesh->isEmitter()) {
-            // return the power of the emitter
-            return its.mesh->getEmitter()->sample(emitterRecord, sampler->next2D(), 0.);
-            return its.mesh->getEmitter()->eval(emitterRecord);
+            // add the power of the emitter
+            Lo += its.mesh->getEmitter()->sample(emitterRecord, sampler->next2D(), 0.);
         }
 
-        // Here perform a visibility query, to check whether the light 
-        // source "em" is visible from the intersection point. 
-        // For that, we create a ray object (shadow ray),
-        // and compute the intersection
+        // Here we sample the point sources, getting its radiance
+        // and direction. 
+        Color3f Li = em->sample(emitterRecord, sampler->next2D(), 0.);       
         
-        Ray3f shadowRay(its.p,emitterRecord.wi);
-        Intersection shadowIts;
-        if (scene->rayIntersect(shadowRay, shadowIts))
-            return Lo;
 
         // Finally, we evaluate the BSDF. For that, we need to build
         // a BSDFQueryRecord from the outgoing direction (the direction
@@ -65,15 +64,9 @@ public:
 		
         // For each light, we accomulate the incident light times the 
         // foreshortening times the BSDF term (i.e. the render equation).
-		float cosTheta = fmaxf(its.shFrame.n.dot(-emitterRecord.wi),0.f);
+		float cosTheta = fmaxf(its.shFrame.n.dot(emitterRecord.wi),0.f);
 		Lo = its.mesh->getBSDF()->eval(bsdfRecord) * Li * cosTheta;
 		
-        // Lo = Le * its.shFrame.n.dot(emitterRecord.wi) * 
-        //                     its.mesh->getBSDF()->eval(bsdfRecord);
-
-        // float pdfLight = em->pdf(emitterRecord);
-        // float pdfPos = its.mesh->pdf(its.p);
-        // Lo /= (pdfLight*pdfPos);
         
 		return Lo;
 	}
