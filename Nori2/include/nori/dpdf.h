@@ -141,7 +141,7 @@ public:
     /**
      * \brief %Transform a uniformly distributed sample to the stored distribution
      * 
-     * The original sample is value adjusted so that it can be "reused".
+     * The original sample value is adjusted so that it can be "reused".
      *
      * \param[in, out] sampleValue
      *     An uniformly distributed sample on [0,1]

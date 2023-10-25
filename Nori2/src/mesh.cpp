@@ -113,13 +113,43 @@ Point3f Mesh::getCentroid(n_UINT index) const {
  * respect to surface area. Returns both position and normal
  */
 void Mesh::samplePosition(const Point2f &sample, Point3f &p, Normal3f &n, Point2f &uv) const
-{
-	throw NoriException("Mesh::samplePosition() is not yet implemented!");	
+{ 
+
+    Point2f bary = Warp::squareToUniformTriangle(sample); // barycentric coordinates of the triangle
+
+    // Get barycentric coordinates
+    float u = bary.x();
+    float v = bary.y();
+    float w = 1 - u - v;
+
+    int f = 0;
+    // Vertex indices of the triangle
+    n_UINT idx0 = m_F(0, f), idx1 = m_F(1, f), idx2 = m_F(2, f);
+
+    // Compute the vertex of the triangle
+    Point3f p0 = m_V.col(idx0), p1 = m_V.col(idx1), p2 = m_V.col(idx2);
+    
+    // Compute the position of the triangle
+    p = u * p0 + v * p1 + w * p2;
+
+    // Compute the normal of the triangle
+    n = m_N.col(f);
+    if(&n == nullptr) {
+        n = (p1 - p0).cross(p2 - p0);
+
+        // Normalize the surface normal
+        n.normalize();
+    }
+
+    // Compute the UV coordinates of the triangle
+    uv = m_UV.col(f);
+
 }
 
 /// Return the surface area of the given triangle
 float Mesh::pdf(const Point3f &p) const
 {
+    
 	throw NoriException("Mesh::pdf() is not yet implemented!");	
 	
 	return 0.;
