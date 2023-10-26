@@ -29,14 +29,13 @@ public:
 
         // Choose a light randomly
         int lightIndex = std::min((int)(sampler->next1D() * lights.size()), (int)lights.size() - 1);
-        float pdfPLight;
-        const Emitter* em = scene->sampleEmitter(sampler->next1D(), pdfPLight);
+        float pdfLight;
+        const Emitter* em = scene->sampleEmitter(sampler->next1D(), pdfLight);
 
 		// Check current its.p is emitter() then distance -> infinite
         if(its.mesh->isEmitter()) {
             // Add the visible radiance of the emitter
             Lo += its.mesh->getEmitter()->eval(emitterRecord);
-            // Lo += its.mesh->getEmitter()->sample(emitterRecord, sampler->next2D(), 0.);
         }
 
         // Here we sample the point sources, getting its radiance
