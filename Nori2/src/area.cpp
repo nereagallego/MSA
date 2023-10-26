@@ -65,14 +65,16 @@ public:
 		m_mesh->samplePosition(sample, lRec.p, lRec.n, lRec.uv);
 
 		lRec.dist = (lRec.p - lRec.ref).norm();
-		lRec.wi = (lRec.p - lRec.ref) / lRec.dist ;		
+		lRec.wi = (lRec.p - lRec.ref) / lRec.dist;
 		lRec.pdf = m_mesh->pdf(lRec.p);
 		
+		cout << "p0: " << lRec.p[0] << " p1: " << lRec.p[1] << " p2: " << lRec.p[2] << endl;
+		cout << "ref0: " << lRec.ref[0] << " ref1: " << lRec.ref[1] << " ref2: " << lRec.ref[2] << endl;
 		// Note thats here it is assumed perfect visibility; this means 
 		// that visibility should be taken care of in the integrator.
 		// if(lRec.pdf == 0.0f || fabsf(lRec.pdf) == INFINITY) return 0.0f;
-		// cout << "eval(Rec): " << lRec.dist << endl;
-		return eval(lRec) * pdf(lRec) / (lRec.dist * lRec.dist);
+		// cout << "wi0: " << lRec.wi[0] << " wi1: " << lRec.wi[1] << " wi2: " << lRec.wi[2] << endl;
+		return eval(lRec) / (lRec.dist * lRec.dist);
 	}
 
 	// Returns probability with respect to solid angle given by all the information inside the emitterqueryrecord.

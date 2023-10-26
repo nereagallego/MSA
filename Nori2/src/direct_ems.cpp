@@ -39,6 +39,8 @@ public:
             // cout << "Lo: " << Lo << endl;
         }
 
+        return 1.f;
+
         // Here we sample the point sources, getting its radiance
         // and direction. 
         Color3f Li = em->sample(emitterRecord, sampler->next2D(), 0.);       
