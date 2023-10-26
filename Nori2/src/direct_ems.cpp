@@ -28,14 +28,15 @@ public:
 		const std::vector<Emitter*> lights = scene->getLights();
 
         // Choose a light randomly
-        int lightIndex = std::min((int)(sampler->next1D() * lights.size()), (int)lights.size() - 1);
         float pdfLight;
         const Emitter* em = scene->sampleEmitter(sampler->next1D(), pdfLight);
 
 		// Check current its.p is emitter() then distance -> infinite
         if(its.mesh->isEmitter()) {
             // Add the visible radiance of the emitter
-            Lo += its.mesh->getEmitter()->eval(emitterRecord);
+
+            Lo += its.mesh->getEmitter()->sample(emitterRecord, sampler->next2D(), 0.);
+            // cout << "Lo: " << Lo << endl;
         }
 
         // Here we sample the point sources, getting its radiance
@@ -48,7 +49,7 @@ public:
         // and compute the intersection
         Ray3f shadowRay(its.p, emitterRecord.wi);
         Intersection shadowIts;
-        if (scene->rayIntersect(shadowRay, shadowIts))
+        if (scene->rayIntersect(shadowRay, shadowIts) && shadowIts.t <= emitterRecord.dist)
             return Lo;
 
         // Finally, we evaluate the BSDF. For that, we need to build

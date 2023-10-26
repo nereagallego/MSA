@@ -45,6 +45,12 @@ void Mesh::activate() {
     }
 
     m_pdf.reserve(m_F.cols());
+
+    // asign probability of sampling each triangle 
+    for(int i = 0; i < m_F.cols(); i++){
+        m_pdf.append(surfaceArea(i));
+    }
+    m_pdf.normalize();
 }
 
 float Mesh::surfaceArea(n_UINT index) const {
@@ -115,51 +121,50 @@ Point3f Mesh::getCentroid(n_UINT index) const {
 void Mesh::samplePosition(const Point2f &sample, Point3f &p, Normal3f &n, Point2f &uv) const
 { 
 
-    Point2f bary = Warp::squareToUniformTriangle(sample); // barycentric coordinates of the triangle
+    Point2f sample_c = sample;
 
-    // Get barycentric coordinates
+    auto sample_idx = m_pdf.sampleReuse(sample_c.x());
+    
+
+    // barycentric coordinates of the triangle
+    Point2f bary = Warp::squareToUniformTriangle(sample_c);
+
     float u = bary.x();
     float v = bary.y();
     float w = 1 - u - v;
 
-    int f = 0;
-    // Vertex indices of the triangle
-    n_UINT idx0 = m_F(0, f), idx1 = m_F(1, f), idx2 = m_F(2, f);
+    auto indices = this->getIndices().col(sample_idx);
 
-    // Compute the vertex of the triangle
-    Point3f p0 = m_V.col(idx0), p1 = m_V.col(idx1), p2 = m_V.col(idx2);
+    Point3f p0 = this->getVertexPositions().col(indices[0]);
+    Point3f p1 = this->getVertexPositions().col(indices[1]);
+    Point3f p2 = this->getVertexPositions().col(indices[2]);
     
-    // Compute the position of the triangle
-    p = u * p0 + v * p1 + w * p2;
+    p = u * p0 + v * p1 + w * p2; // vertex
 
-
-    size_t idx = m_pdf.sample(pdf(p));
-
-    // Compute the normal of the triangle
-    n = m_N.col(f);
-    if(&n == nullptr) {
+    // Get surface normal
+    if (this->getVertexNormals().cols() > 0) {
+        Normal3f n0 = this->getVertexNormals().col(indices[0]);
+        Normal3f n1 = this->getVertexNormals().col(indices[1]);
+        Normal3f n2 = this->getVertexNormals().col(indices[2]);
+        n = u * n0 + v * n1 + w * n2;
+    } else {
         n = (p1 - p0).cross(p2 - p0);
-
-        // Normalize the surface normal
         n.normalize();
     }
 
-    // Compute the UV coordinates of the triangle
-    uv = m_UV.col(f);
-
+    if (this->getVertexTexCoords().cols() > 0) {
+        Point2f uv0 = this->getVertexTexCoords().col(indices[0]);
+        Point2f uv1 = this->getVertexTexCoords().col(indices[1]);
+        Point2f uv2 = this->getVertexTexCoords().col(indices[2]);
+        uv = u * uv0 + v * uv1 + w * uv2;
+    }
 }
 
 /// Return the surface area of the given triangle
 float Mesh::pdf(const Point3f &p) const
 {
-    // activate();
-    // m_pdf.normalize();
-    float f = m_pdf.getNormalization();
-    //Return the surface area of the given triangle
-    // return surfaceArea()
-
-	
-	return 0.;
+    // cout << m_pdf.getNormalization() << endl;
+    return m_pdf.getNormalization();
 }
 
 

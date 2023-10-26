@@ -65,4 +65,9 @@
 			<color name="radiance" value="40 40 40"/>
 		</emitter>
 	</mesh>
+
+	<!-- <emitter type="pointlight">
+		<color name="radiance" value="12, 3, 3"/>
+		<point name="position" value="0, 1, 0"/>
+	</emitter> -->
 </scene>

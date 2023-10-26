@@ -48,21 +48,31 @@ public:
 		if (!m_mesh)
 			throw NoriException("There is no shape attached to this Area light!");
 
-		// This function call can be done by bsdf sampling routines.
-		// Hence the ray was already traced for us - i.e a visibility test was already performed.
-		// Hence just check if the associated normal in emitter query record and incoming direction are not backfacing
-		throw NoriException("AreaEmitter::eval() is not yet implemented!");
+
+		if (lRec.n.dot(lRec.wi) < 0.0f){
+			// cout << "n: " << lRec.n << " wi: " << lRec.wi <<endl;
+
+            return m_radiance->eval(lRec.uv);//*  abs(lRec.n.dot(lRec.wi));
+		}else{
+            return 0.;	
+		}
 	}
 
 	virtual Color3f sample(EmitterQueryRecord & lRec, const Point2f & sample, float optional_u) const {
 		if (!m_mesh)
 			throw NoriException("There is no shape attached to this Area light!");
 
-		Point3f p;
-		Normal3f n;
-		Point2f uv;
-		m_mesh->samplePosition(sample, p, n, uv);
-		throw NoriException("AreaEmitter::sample() is not yet implemented!");
+		m_mesh->samplePosition(sample, lRec.p, lRec.n, lRec.uv);
+
+		lRec.dist = (lRec.p - lRec.ref).norm();
+		lRec.wi = (lRec.p - lRec.ref) / lRec.dist ;		
+		lRec.pdf = m_mesh->pdf(lRec.p);
+		
+		// Note thats here it is assumed perfect visibility; this means 
+		// that visibility should be taken care of in the integrator.
+		// if(lRec.pdf == 0.0f || fabsf(lRec.pdf) == INFINITY) return 0.0f;
+		// cout << "eval(Rec): " << lRec.dist << endl;
+		return eval(lRec) * pdf(lRec) / (lRec.dist * lRec.dist);
 	}
 
 	// Returns probability with respect to solid angle given by all the information inside the emitterqueryrecord.
@@ -73,7 +83,7 @@ public:
 		if (!m_mesh)
 			throw NoriException("There is no shape attached to this Area light!");
 
-		throw NoriException("AreaEmitter::pdf() is not yet implemented!");
+		return m_mesh->pdf(lRec.p) * lRec.dist * lRec.dist / abs(lRec.n.dot(lRec.wi));
 	}
 
 
