@@ -135,27 +135,27 @@ void Mesh::samplePosition(const Point2f &sample, Point3f &p, Normal3f &n, Point2
 
     auto indices = this->getIndices().col(sample_idx);
 
-    Point3f p0 = this->getVertexPositions().col(indices[0]);
-    Point3f p1 = this->getVertexPositions().col(indices[1]);
-    Point3f p2 = this->getVertexPositions().col(indices[2]);
+    Point3f p0 = this->getVertexPositions().col(indices(0));
+    Point3f p1 = this->getVertexPositions().col(indices(1));
+    Point3f p2 = this->getVertexPositions().col(indices(2));
     
     p = u * p0 + v * p1 + w * p2; // vertex
 
     // Get surface normal
     if (this->getVertexNormals().cols() > 0) {
-        Normal3f n0 = this->getVertexNormals().col(indices[0]);
-        Normal3f n1 = this->getVertexNormals().col(indices[1]);
-        Normal3f n2 = this->getVertexNormals().col(indices[2]);
+        Point3f n0 = this->getVertexNormals().col(indices(0));
+        Point3f n1 = this->getVertexNormals().col(indices(1));
+        Point3f n2 = this->getVertexNormals().col(indices(2));
         n = u * n0 + v * n1 + w * n2;
     } else {
         n = (p1 - p0).cross(p2 - p0);
-        n.normalize();
+        n.normalized();
     }
 
     if (this->getVertexTexCoords().cols() > 0) {
-        Point2f uv0 = this->getVertexTexCoords().col(indices[0]);
-        Point2f uv1 = this->getVertexTexCoords().col(indices[1]);
-        Point2f uv2 = this->getVertexTexCoords().col(indices[2]);
+        Point2f uv0 = this->getVertexTexCoords().col(indices(0));
+        Point2f uv1 = this->getVertexTexCoords().col(indices(1));
+        Point2f uv2 = this->getVertexTexCoords().col(indices(2));
         uv = u * uv0 + v * uv1 + w * uv2;
     }
 }

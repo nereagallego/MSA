@@ -37,6 +37,7 @@ public:
 
             Lo += its.mesh->getEmitter()->sample(emitterRecord, sampler->next2D(), 0.);
             // cout << "Lo: " << Lo << endl;
+            return Lo;
         }
 
         return 1.f;
