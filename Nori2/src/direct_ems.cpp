@@ -21,24 +21,16 @@ public:
 		if (!scene->rayIntersect(ray, its))
 			return scene->getBackground(ray);
             
-		float pdflight;
 		EmitterQueryRecord emitterRecord(its.p);
 
-        // Here perform a visibility query, to check whether the light 
-        // source "em" is visible from the intersection point. 
-        // For that, we create a ray object (shadow ray),
-        // and compute the intersection
-        Ray3f shadowRay(its.p,- emitterRecord.wi);
-        Intersection shadowIts;
-        if (scene->rayIntersect(shadowRay, shadowIts))
-            return Lo;
 
 		// Get all lights in the scene
 		const std::vector<Emitter*> lights = scene->getLights();
 
         // Choose a light randomly
         int lightIndex = std::min((int)(sampler->next1D() * lights.size()), (int)lights.size() - 1);
-        const Emitter* em = lights[lightIndex];
+        float pdfPLight;
+        const Emitter* em = scene->sampleEmitter(sampler->next1D(), pdfPLight);
 
 		// Check current its.p is emitter() then distance -> infinite
         if(its.mesh->isEmitter()) {
@@ -51,6 +43,14 @@ public:
         // and direction. 
         Color3f Li = em->sample(emitterRecord, sampler->next2D(), 0.);       
         
+        // Here perform a visibility query, to check whether the light 
+        // source "em" is visible from the intersection point. 
+        // For that, we create a ray object (shadow ray),
+        // and compute the intersection
+        Ray3f shadowRay(its.p, emitterRecord.wi);
+        Intersection shadowIts;
+        if (scene->rayIntersect(shadowRay, shadowIts))
+            return Lo;
 
         // Finally, we evaluate the BSDF. For that, we need to build
         // a BSDFQueryRecord from the outgoing direction (the direction
@@ -68,8 +68,11 @@ public:
 		float cosTheta = fmaxf(its.shFrame.n.dot(emitterRecord.wi),0.f);
 		Lo += its.mesh->getBSDF()->eval(bsdfRecord) * Li * cosTheta;
 		
+        // cout << "Lo: " << Lo << endl;
+        float pdfPoint = em->pdf(emitterRecord);
         
-		return Lo;
+        
+		return Lo/(pdfPLight * pdfPoint);
 	}
 
 	std::string toString() const {
