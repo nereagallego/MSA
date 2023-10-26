@@ -40,10 +40,11 @@ public:
         int lightIndex = std::min((int)(sampler->next1D() * lights.size()), (int)lights.size() - 1);
         const Emitter* em = lights[lightIndex];
 
-		//check current its.p is emitter() then distance -> infinite
+		// Check current its.p is emitter() then distance -> infinite
         if(its.mesh->isEmitter()) {
-            // add the power of the emitter
-            Lo += its.mesh->getEmitter()->sample(emitterRecord, sampler->next2D(), 0.);
+            // Add the visible radiance of the emitter
+            Lo += its.mesh->getEmitter()->eval(emitterRecord);
+            // Lo += its.mesh->getEmitter()->sample(emitterRecord, sampler->next2D(), 0.);
         }
 
         // Here we sample the point sources, getting its radiance
@@ -62,10 +63,10 @@ public:
                             its.toLocal(emitterRecord.wi), its.uv, ESolidAngle);
 
 		
-        // For each light, we accomulate the incident light times the 
+        // For the light chosen, we accomulate the incident light times the 
         // foreshortening times the BSDF term (i.e. the render equation).
 		float cosTheta = fmaxf(its.shFrame.n.dot(emitterRecord.wi),0.f);
-		Lo = its.mesh->getBSDF()->eval(bsdfRecord) * Li * cosTheta;
+		Lo += its.mesh->getBSDF()->eval(bsdfRecord) * Li * cosTheta;
 		
         
 		return Lo;

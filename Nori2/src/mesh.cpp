@@ -132,6 +132,9 @@ void Mesh::samplePosition(const Point2f &sample, Point3f &p, Normal3f &n, Point2
     // Compute the position of the triangle
     p = u * p0 + v * p1 + w * p2;
 
+
+    size_t idx = m_pdf.sample(pdf(p));
+
     // Compute the normal of the triangle
     n = m_N.col(f);
     if(&n == nullptr) {
@@ -149,8 +152,12 @@ void Mesh::samplePosition(const Point2f &sample, Point3f &p, Normal3f &n, Point2
 /// Return the surface area of the given triangle
 float Mesh::pdf(const Point3f &p) const
 {
-    
-	throw NoriException("Mesh::pdf() is not yet implemented!");	
+    // activate();
+    // m_pdf.normalize();
+    float f = m_pdf.getNormalization();
+    //Return the surface area of the given triangle
+    // return surfaceArea()
+
 	
 	return 0.;
 }
