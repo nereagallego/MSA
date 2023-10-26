@@ -71,7 +71,7 @@ public:
         float pdfPoint = em->pdf(emitterRecord);
         
         
-		return Lo/(pdfPLight * pdfPoint);
+		return Lo/(pdfLight * pdfPoint);
 	}
 
 	std::string toString() const {
