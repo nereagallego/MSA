@@ -48,11 +48,8 @@ public:
 		if (!m_mesh)
 			throw NoriException("There is no shape attached to this Area light!");
 
-
 		if (lRec.n.dot(lRec.wi) < 0.0f){
-			// cout << "n: " << lRec.n << " wi: " << lRec.wi <<endl;
-
-            return m_radiance->eval(lRec.uv);//*  abs(lRec.n.dot(lRec.wi));
+            return m_radiance->eval(lRec.uv) * M_PI;
 		}else{
             return 0.;	
 		}
@@ -66,16 +63,9 @@ public:
 
 		lRec.dist = (lRec.p - lRec.ref).norm();
 		lRec.wi = (lRec.p - lRec.ref) / lRec.dist;
-		lRec.pdf = m_mesh->pdf(lRec.p);
+		lRec.pdf = this->pdf(lRec);
 		
-		// cout << "p0: " << lRec.p[0] << " p1: " << lRec.p[1] << " p2: " << lRec.p[2] << endl;
-		// cout << "ref0: " << lRec.ref[0] << " ref1: " << lRec.ref[1] << " ref2: " << lRec.ref[2] << endl;
-		// Note thats here it is assumed perfect visibility; this means 
-		// that visibility should be taken care of in the integrator.
-		// if(lRec.pdf == 0.0f || fabsf(lRec.pdf) == INFINITY) return 0.0f;
-		// cout << "wi0: " << lRec.wi[0] << " wi1: " << lRec.wi[1] << " wi2: " << lRec.wi[2] << endl;
-		cout << " wi1: " << lRec.wi[1] << endl;
-		return eval(lRec) / (lRec.dist * lRec.dist);
+		return eval(lRec);
 	}
 
 	// Returns probability with respect to solid angle given by all the information inside the emitterqueryrecord.
@@ -86,7 +76,14 @@ public:
 		if (!m_mesh)
 			throw NoriException("There is no shape attached to this Area light!");
 
-		return m_mesh->pdf(lRec.p) * lRec.dist * lRec.dist / abs(lRec.n.dot(lRec.wi));
+		return m_mesh->pdf(lRec.p) * lRec.dist * lRec.dist / abs(lRec.wi.dot(lRec.n));
+	}
+
+	virtual Color3f power() const {
+		if (!m_mesh)
+			throw NoriException("There is no shape attached to this Area light!");
+
+		return m_radiance->eval(Point2f(0,0)) * (1./m_mesh->pdf(Point3f(0,0,0)));
 	}
 
 

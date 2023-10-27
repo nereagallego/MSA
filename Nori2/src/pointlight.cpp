@@ -49,6 +49,9 @@ public:
 		return 1.;
 	}
 
+	virtual Color3f power() const {
+		return m_radiance;
+	}
 
 protected:
 	Point3f m_position;

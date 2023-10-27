@@ -33,14 +33,12 @@ public:
 
 		// Check current its.p is emitter() then distance -> infinite
         if(its.mesh->isEmitter()) {
+            emitterRecord.ref = ray.o;
+			emitterRecord.wi = -ray.d;
+			emitterRecord.n = its.shFrame.n;
             // Add the visible radiance of the emitter
-
-            Lo += its.mesh->getEmitter()->sample(emitterRecord, sampler->next2D(), 0.);
-            // cout << "Lo: " << Lo << endl;
-            return Lo;
+            return its.mesh->getEmitter()->sample(emitterRecord, sampler->next2D(), 0.);
         }
-
-        return 1.f;
 
         // Here we sample the point sources, getting its radiance
         // and direction. 
@@ -68,12 +66,10 @@ public:
 		
         // For the light chosen, we accomulate the incident light times the 
         // foreshortening times the BSDF term (i.e. the render equation).
-		float cosTheta = fmaxf(its.shFrame.n.dot(emitterRecord.wi),0.f);
-		Lo += its.mesh->getBSDF()->eval(bsdfRecord) * Li * cosTheta;
+		float cosTheta = its.shFrame.n.dot(emitterRecord.wi);
+		Lo += Li * its.mesh->getBSDF()->eval(bsdfRecord) * cosTheta;
 		
-        // cout << "Lo: " << Lo << endl;
         float pdfPoint = em->pdf(emitterRecord);
-        
         
 		return Lo/(pdfLight * pdfPoint);
 	}

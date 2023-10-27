@@ -61,6 +61,10 @@ void Scene::activate() {
             NoriObjectFactory::createInstance("independent", PropertyList()));
     }
 
+    for (unsigned int i = 0; i < m_emitters.size(); ++i)
+        m_emitter_pdf.append(m_emitters[i]->power().getLuminance());
+    m_emitter_pdf.normalize();
+
     cout << endl;
     cout << "Configuration: " << toString() << endl;
     cout << endl;
@@ -69,13 +73,15 @@ void Scene::activate() {
 /// Sample emitter
 const Emitter * Scene::sampleEmitter(float rnd, float &pdf) const {
 	auto const & n = m_emitters.size();
-	size_t index = std::min(static_cast<size_t>(std::floor(n*rnd)), n - 1);
-	pdf = 1. / float(n);
+	// size_t index = std::min(static_cast<size_t>(std::floor(n*rnd)), n - 1);     //LIGHT SAMPLING
+    size_t index = m_emitter_pdf.sample(rnd, pdf);
+	// pdf = 1. / float(n);    //LIGHT SAMPLING
 	return m_emitters[index];
 }
 
 float Scene::pdfEmitter(const Emitter *em) const {
-    return 1. / float(m_emitters.size());
+    // return 1. / float(m_emitters.size());    //LIGHT SAMPLING
+    return 1. / em->power().getLuminance();
 }
 
 
@@ -130,7 +136,7 @@ Color3f Scene::getBackground(const Ray3f& ray) const
     if (!m_enviromentalEmitter)
         return Color3f(0);
 
-    EmitterQueryRecord lRec(m_enviromentalEmitter, ray.o, ray.o + ray.d, Normal3f(0, 0, 1), Vector2f());
+    EmitterQueryRecord lRec(m_enviromentalEmitter, ray.o, ray.o + ray.d, -ray.d, Vector2f());
 	return m_enviromentalEmitter->eval(lRec);
 }
 

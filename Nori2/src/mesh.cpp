@@ -44,8 +44,6 @@ void Mesh::activate() {
             NoriObjectFactory::createInstance("diffuse", PropertyList()));
     }
 
-    m_pdf.reserve(m_F.cols());
-
     // asign probability of sampling each triangle 
     for(int i = 0; i < m_F.cols(); i++){
         m_pdf.append(surfaceArea(i));
@@ -149,7 +147,7 @@ void Mesh::samplePosition(const Point2f &sample, Point3f &p, Normal3f &n, Point2
         n = u * n0 + v * n1 + w * n2;
     } else {
         n = (p1 - p0).cross(p2 - p0);
-        n.normalized();
+        n.normalize();
     }
 
     if (this->getVertexTexCoords().cols() > 0) {
@@ -163,7 +161,6 @@ void Mesh::samplePosition(const Point2f &sample, Point3f &p, Normal3f &n, Point2
 /// Return the surface area of the given triangle
 float Mesh::pdf(const Point3f &p) const
 {
-    // cout << m_pdf.getNormalization() << endl;
     return m_pdf.getNormalization();
 }
 
