@@ -66,6 +66,7 @@ add_executable(nori
   include/nori/transform.h
   include/nori/vector.h
   include/nori/warp.h
+  include/nori/reflectance.h
 
   # Source code files
   src/accel.cpp
@@ -98,6 +99,7 @@ add_executable(nori
   src/direct_whitted.cpp
   src/depth.cpp
   src/direct_ems.cpp
+  src/reflectance.cpp
 )
 
 add_definitions(${NANOGUI_EXTRA_DEFS})
@@ -105,12 +107,14 @@ add_definitions(${NANOGUI_EXTRA_DEFS})
 # The following lines build the warping test application
 add_executable(warptest
   include/nori/warp.h
+  include/nori/reflectance.h
   src/warp.cpp
   src/warptest.cpp
   src/microfacet.cpp
   src/object.cpp
   src/proplist.cpp
   src/common.cpp
+  src/reflectance.cpp
 )
 
 if (WIN32)

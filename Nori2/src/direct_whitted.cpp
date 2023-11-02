@@ -21,7 +21,6 @@ public:
 		if (!scene->rayIntersect(ray, its))
 			return scene->getBackground(ray);
 
-		float pdflight;
 		EmitterQueryRecord emitterRecord(its.p);
 
 		// Get all lights in the scene
