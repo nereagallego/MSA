@@ -288,9 +288,13 @@ public:
         // use the Schlick's approximation for the Fresnel term
         // use the Smith's approximation for the shadowing-masking function
 
-        
+        // Roughness
         float alpha = m_alpha->eval(bRec.uv).getLuminance();
-        Color3f f_diff = 28 * m_kd->eval(bRec.uv) / (23 * M_PI)*(1 - pow(((m_extIOR-m_intIOR)/(m_extIOR+m_intIOR)),2)) *  ( 1 - pow(1 - 0.5*Frame::cosTheta(bRec.wi), 5)) * (1 - pow(1 - 0.5*Frame::cosTheta(bRec.wo), 5)); 
+        
+        Color3f f_diff = 28 * m_kd->eval(bRec.uv) / (23 * M_PI) * 
+                        (1 - pow(((m_extIOR-m_intIOR)/(m_extIOR+m_intIOR)),2)) * 
+                        (1 - pow(1 - 0.5*Frame::cosTheta(bRec.wi), 5)) * 
+                        (1 - pow(1 - 0.5*Frame::cosTheta(bRec.wo), 5));
 		Vector3f wh = (bRec.wi + bRec.wo).normalized();
 
         // Microfacer distribution
@@ -299,26 +303,32 @@ public:
         // Fresnel coeficient
         // Color3f F = Reflectance::fresnel(Frame::cosTheta(bRec.wi), m_R0->eval(bRec.uv)); //check this
         float F = Reflectance::fresnel(Frame::cosTheta(bRec.wi), m_extIOR, m_intIOR);
-        
-        // Roughness
-        float alpha = m_alpha->eval(bRec.uv).getLuminance();
 
         // Shadowing-masking function
         float G = Reflectance::G1(bRec.wi, wh, alpha) * Reflectance::G1(bRec.wo, wh, alpha);
 
-        Color3f f_mf=  F * D * G / (4 * Frame::cosTheta(bRec.wi) * Frame::cosTheta(bRec.wo));
-        
-        
+        Color3f f_mf =  F * D * G / (4 * Frame::cosTheta(bRec.wi) * Frame::cosTheta(bRec.wo));
+
+
+        // if (!f_diff.isValid())
+        //     cout << "f_diff: " << pow(1 - 0.5*Frame::cosTheta(bRec.wi), 5) << endl;
+
+        return f_diff + f_mf;
 	}
 
     /// Evaluate the sampling density of \ref sample() wrt. solid angles
     float pdf(const BSDFQueryRecord &bRec) const {
         /* This is a smooth BRDF -- return zero if the measure
        is wrong, or when queried for illumination on the backside */
-        if (bRec.measure != ESolidAngle
-            || Frame::cosTheta(bRec.wi) <= 0
-            || Frame::cosTheta(bRec.wo) <= 0)
-            return 0.0f;
+        // if (bRec.measure != ESolidAngle
+        //     || Frame::cosTheta(bRec.wi) <= 0
+        //     || Frame::cosTheta(bRec.wo) <= 0)
+        //     return 0.0f;
+
+        // Roughness
+        float alpha = m_alpha->eval(bRec.uv).getLuminance();
+
+        return Warp::squareToBeckmannPdf(bRec.wo, alpha);
 
 		throw NoriException("RoughSubstrate::eval() is not yet implemented!");
     }
@@ -330,10 +340,18 @@ public:
         // BRDF value divided by the solid angle density and multiplied by the
         // cosine factor from the reflection equation, i.e.
         // return eval(bRec) * Frame::cosTheta(bRec.wo) / pdf(bRec);
-        if (Frame::cosTheta(bRec.wi) <= 0)
-            return Color3f(0.0f);
+        // if (Frame::cosTheta(bRec.wi) <= 0)
+        //     return Color3f(0.0f);
+
+        // Roughness
+        float alpha = m_alpha->eval(bRec.uv).getLuminance();
+
+        Vector3f wh = Warp::squareToBeckmann(_sample, alpha);
+        bRec.wo = (wh + bRec.wi) / 2;
 
         bRec.measure = ESolidAngle;
+
+        return eval(bRec) * Frame::cosTheta(bRec.wo) / pdf(bRec);
 
 		throw NoriException("RoughSubstrate::sample() is not yet implemented!");
 	}
