@@ -100,6 +100,7 @@ add_executable(nori
   src/depth.cpp
   src/direct_ems.cpp
   src/reflectance.cpp
+  src/direct_mats.cpp
 )
 
 add_definitions(${NANOGUI_EXTRA_DEFS})

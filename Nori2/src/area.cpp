@@ -49,7 +49,7 @@ public:
 			throw NoriException("There is no shape attached to this Area light!");
 
 		if (lRec.n.dot(lRec.wi) < 0.0f){
-            return m_radiance->eval(lRec.uv) * M_PI;
+            return m_radiance->eval(lRec.uv) ;
 		}else{
             return 0.;	
 		}
