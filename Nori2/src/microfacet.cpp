@@ -81,8 +81,10 @@ public:
 
         // Roughness
         float alpha = m_alpha->eval(bRec.uv).getLuminance();
+
+        Vector3f wh = (bRec.wi + bRec.wo).normalized();
         
-        return Warp::squareToBeckmannPdf(bRec.wo, alpha);
+        return Warp::squareToBeckmannPdf(wh, alpha);
 
         throw NoriException("RoughConductor::eval() is not yet implemented!");
     }
@@ -112,7 +114,7 @@ public:
         Color3f value = eval(bRec) * Frame::cosTheta(bRec.wo) / pdf(bRec);
         if(!value.isValid())
             cout << "NaN" << endl;
-        return eval(bRec) * Frame::cosTheta(bRec.wi) / pdf(bRec);
+        return eval(bRec) * abs(Frame::cosTheta(bRec.wi)) / pdf(bRec);
 
         throw NoriException("RoughConductor::sample() is not yet implemented!");
     }

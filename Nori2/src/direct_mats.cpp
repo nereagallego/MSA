@@ -48,18 +48,18 @@ public:
         // source "em" is visible from the intersection point. 
         // For that, we create a ray object (shadow ray),
         // and compute the intersection
-        Ray3f shadowRay(its.p, its.toWorld(bsdfRecord.wo), Epsilon, std::numeric_limits<float>::infinity());
+        Ray3f sampleRay(its.p, its.toWorld(bsdfRecord.wo), Epsilon, std::numeric_limits<float>::infinity());
         Intersection shadowIts;
-        if (scene->rayIntersect(shadowRay, shadowIts)){
+        if (scene->rayIntersect(sampleRay, shadowIts)){
             
             // Check if the object intersects is an emitter
             if (shadowIts.mesh->isEmitter()) {
                 EmitterQueryRecord emitterRecord(shadowIts.p);
-                emitterRecord.ref = shadowRay.o;
+                emitterRecord.ref = sampleRay.o;
                 emitterRecord.emitter = shadowIts.mesh->getEmitter();
-                emitterRecord.wi = its.toWorld(-bsdfRecord.wo);
+                emitterRecord.wi = its.toWorld(bsdfRecord.wo);
                 emitterRecord.n = shadowIts.shFrame.n;
-                emitterRecord.dist = (shadowIts.p - shadowRay.o).norm();
+                emitterRecord.dist = (shadowIts.p - sampleRay.o).norm();
 
                 const Emitter *em = emitterRecord.emitter;
 
@@ -72,8 +72,7 @@ public:
             
             // If the shadow ray does not intersect any object, we 
             // add the background color
-            float cosTheta = its.shFrame.n.dot(its.toWorld(-bsdfRecord.wo));
-            Lo += scene->getBackground(ray) * f ;
+            Lo += scene->getBackground(sampleRay) * f ;
 
         }
 
