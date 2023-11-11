@@ -26,6 +26,7 @@
 #include <nori/reflectance.h>
 #include <nori/texture.h>
 #include <cmath>
+#include <random>
 
 NORI_NAMESPACE_BEGIN
 
@@ -103,7 +104,7 @@ public:
         float alpha = m_alpha->eval(bRec.uv).getLuminance();
 
         Vector3f wh = Warp::squareToBeckmann(_sample, alpha);
-        bRec.wo = (wh + bRec.wi).normalized();
+        bRec.wo = 2.0f * wh.dot(bRec.wi) * wh - bRec.wi;
 
         bRec.measure = ESolidAngle;
         float pdf_ = pdf(bRec);
@@ -281,10 +282,10 @@ public:
     Color3f eval(const BSDFQueryRecord &bRec) const {
         /* This is a smooth BRDF -- return zero if the measure
         is wrong, or when queried for illumination on the backside */
-        // if (bRec.measure != ESolidAngle
-        //     || Frame::cosTheta(bRec.wi) <= 0
-        //     || Frame::cosTheta(bRec.wo) <= 0)
-        //     return Color3f(0.0f);
+        if (bRec.measure != ESolidAngle
+            || Frame::cosTheta(bRec.wi) <= 0
+            || Frame::cosTheta(bRec.wo) <= 0)
+            return Color3f(0.0f);
 
         // use the Beckmann distribution as your normal distribution function (NDF)
 
@@ -329,14 +330,15 @@ public:
             || Frame::cosTheta(bRec.wi) <= 0
             || Frame::cosTheta(bRec.wo) <= 0)
             return 0.0f;
+        Vector3f wh = (bRec.wi + bRec.wo).normalized();
 
         // Fresnel coeficient
-        float F = Reflectance::fresnel(Frame::cosTheta(bRec.wi), m_extIOR, m_intIOR);
+        float F = Reflectance::fresnel(wh.dot(bRec.wi), m_extIOR, m_intIOR);
 
         // Roughness
         float alpha = m_alpha->eval(bRec.uv).getLuminance();
 
-        Vector3f wh = (bRec.wi + bRec.wo).normalized();
+        
 
         return F * Warp::squareToBeckmannPdf(wh, alpha) + (1 - F) * Warp::squareToCosineHemispherePdf(bRec.wo);
 
@@ -353,20 +355,24 @@ public:
         // if (Frame::cosTheta(bRec.wi) <= 0)
         //     return Color3f(0.0f);
 
+        
+        Vector3f wh = (bRec.wi + bRec.wo).normalized();
+
         // Fresnel coeficient
-        float F = Reflectance::fresnel(Frame::cosTheta(bRec.wi), m_extIOR, m_intIOR);
+        float F = Reflectance::fresnel(wh.dot(bRec.wi), m_extIOR, m_intIOR);
         
         // cout << "F: " << F << endl;
 
+        float rr = rand() / (float)RAND_MAX;
         // choose one component using Russian roulette based on the F value microfacet or diffuse
-        if (_sample.x() < F) {
+        if (rr < F) {
             // Microfacet
             
             // Roughness
             float alpha = m_alpha->eval(bRec.uv).getLuminance();
 
             Vector3f wh = Warp::squareToBeckmann(_sample, alpha);
-            bRec.wo = (wh + bRec.wi).normalized();
+            bRec.wo =  2.0f * wh.dot(bRec.wi) * wh - bRec.wi;
 
             bRec.measure = ESolidAngle;
             float pdf_ = pdf(bRec);
@@ -392,7 +398,7 @@ public:
             // return m_kd->eval(bRec.uv) * abs(Frame::cosTheta(bRec.wo)) / (M_PI * pdf(bRec));
             // return m_kd->eval(bRec.uv)  / (M_PI);
         }
-        return eval(bRec) * abs(Frame::cosTheta(bRec.wo)) / pdf(bRec);
+        return eval(bRec) * abs(Frame::cosTheta(bRec.wi)) / pdf(bRec);
 
 		throw NoriException("RoughSubstrate::sample() is not yet implemented!");
 	}
