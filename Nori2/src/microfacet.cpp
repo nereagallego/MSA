@@ -58,7 +58,7 @@ public:
         float D = Reflectance::BeckmannNDF(wh, m_alpha->eval(bRec.uv).getLuminance());
 
         // Fresnel coeficient
-        Color3f F = Reflectance::fresnel(Frame::cosTheta(bRec.wi), m_R0->eval(bRec.uv));
+        Color3f F = Reflectance::fresnel(wh.dot(bRec.wi), m_R0->eval(bRec.uv));
         
         // Roughness
         float alpha = m_alpha->eval(bRec.uv).getLuminance();
@@ -83,10 +83,10 @@ public:
         float alpha = m_alpha->eval(bRec.uv).getLuminance();
 
         Vector3f wh = (bRec.wi + bRec.wo).normalized();
-        
-        return Warp::squareToBeckmannPdf(wh, alpha);
 
-        throw NoriException("RoughConductor::eval() is not yet implemented!");
+        // float jacobian = 1 / (4 * abs(wh.dot(bRec.wo)));
+        
+        return Warp::squareToBeckmannPdf(wh, alpha) ;
     }
 
     /// Sample the BRDF
@@ -96,8 +96,8 @@ public:
         // BRDF value divided by the solid angle density and multiplied by the
         // cosine factor from the reflection equation, i.e.
         // return eval(bRec) * Frame::cosTheta(bRec.wo) / pdf(bRec);
-        if (Frame::cosTheta(bRec.wi) <= 0)
-            return Color3f(0.0f);
+        // if (Frame::cosTheta(bRec.wi) <= 0)
+        //     return Color3f(0.0f);
 
         // Roughness
         float alpha = m_alpha->eval(bRec.uv).getLuminance();
@@ -107,16 +107,11 @@ public:
 
         bRec.measure = ESolidAngle;
         float pdf_ = pdf(bRec);
-        if (abs(pdf_) < 1e-6){
+        if (abs(pdf_) < Epsilon){
             return Color3f(0.0f);
         }
-        // cout << "pdf: " << pdf(bRec) << endl;
-        Color3f value = eval(bRec) * Frame::cosTheta(bRec.wo) / pdf(bRec);
-        if(!value.isValid())
-            cout << "NaN" << endl;
-        return eval(bRec) * abs(Frame::cosTheta(bRec.wi)) / pdf(bRec);
 
-        throw NoriException("RoughConductor::sample() is not yet implemented!");
+        return eval(bRec) * abs(Frame::cosTheta(bRec.wi)) / pdf(bRec);
     }
 
     bool isDiffuse() const {
@@ -312,7 +307,7 @@ public:
 
         // Fresnel coeficient
         // Color3f F = Reflectance::fresnel(Frame::cosTheta(bRec.wi), m_R0->eval(bRec.uv)); //check this
-        float F = Reflectance::fresnel(Frame::cosTheta(bRec.wi), m_extIOR, m_intIOR);
+        float F = Reflectance::fresnel(wh.dot(bRec.wi), m_extIOR, m_intIOR);
 
         // Shadowing-masking function
         float G = Reflectance::G1(bRec.wi, wh, alpha) * Reflectance::G1(bRec.wo, wh, alpha);
@@ -343,7 +338,7 @@ public:
 
         Vector3f wh = (bRec.wi + bRec.wo).normalized();
 
-        return F * Warp::squareToBeckmannPdf(wh, alpha) + (1 - F) * Warp::squareToCosineHemispherePdf(wh);
+        return F * Warp::squareToBeckmannPdf(wh, alpha) + (1 - F) * Warp::squareToCosineHemispherePdf(bRec.wo);
 
 		throw NoriException("RoughSubstrate::eval() is not yet implemented!");
     }
@@ -355,8 +350,8 @@ public:
         // BRDF value divided by the solid angle density and multiplied by the
         // cosine factor from the reflection equation, i.e.
         // return eval(bRec) * Frame::cosTheta(bRec.wo) / pdf(bRec);
-        if (Frame::cosTheta(bRec.wi) <= 0)
-            return Color3f(0.0f);
+        // if (Frame::cosTheta(bRec.wi) <= 0)
+        //     return Color3f(0.0f);
 
         // Fresnel coeficient
         float F = Reflectance::fresnel(Frame::cosTheta(bRec.wi), m_extIOR, m_intIOR);
@@ -366,42 +361,38 @@ public:
         // choose one component using Russian roulette based on the F value microfacet or diffuse
         if (_sample.x() < F) {
             // Microfacet
+            
             // Roughness
             float alpha = m_alpha->eval(bRec.uv).getLuminance();
 
             Vector3f wh = Warp::squareToBeckmann(_sample, alpha);
-            bRec.wo = (wh + bRec.wi) / 2;
+            bRec.wo = (wh + bRec.wi).normalized();
 
             bRec.measure = ESolidAngle;
             float pdf_ = pdf(bRec);
-            if (abs(pdf_) < 1e-6){
+            if (abs(pdf_) < Epsilon){
                 return Color3f(0.0f);
             }
             // cout << "pdf: " << pdf(bRec) << endl;
-            return eval(bRec) * Frame::cosTheta(bRec.wo) / pdf(bRec);
+            // return eval(bRec) * abs(Frame::cosTheta(bRec.wi)) / pdf(bRec);
         }
         else {
             // Diffuse
             bRec.wo = Warp::squareToCosineHemisphere(_sample);
             bRec.measure = ESolidAngle;
+            bRec.eta = 1.0f;
+           
 
             float pdf_ = pdf(bRec);
-            if (abs(pdf_) < 1e-6){
+            if (abs(pdf_) < Epsilon){
                 return Color3f(0.0f);
             }
 
-            return eval(bRec) * Frame::cosTheta(bRec.wo) / pdf(bRec);
+            // return eval(bRec) * abs(Frame::cosTheta(bRec.wo)) / pdf(bRec);
+            // return m_kd->eval(bRec.uv) * abs(Frame::cosTheta(bRec.wo)) / (M_PI * pdf(bRec));
+            // return m_kd->eval(bRec.uv)  / (M_PI);
         }
-
-        // Roughness
-        float alpha = m_alpha->eval(bRec.uv).getLuminance();
-
-        Vector3f wh = Warp::squareToBeckmann(_sample, alpha);
-        bRec.wo = (wh + bRec.wi) / 2;
-
-        bRec.measure = ESolidAngle;
-
-        return eval(bRec) * Frame::cosTheta(bRec.wo) / pdf(bRec);
+        return eval(bRec) * abs(Frame::cosTheta(bRec.wo)) / pdf(bRec);
 
 		throw NoriException("RoughSubstrate::sample() is not yet implemented!");
 	}

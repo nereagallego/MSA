@@ -31,14 +31,13 @@ public:
 			emitterRecord.wi = -ray.d;
 			emitterRecord.n = its.shFrame.n;
             // Add the visible radiance of the emitter
-            return its.mesh->getEmitter()->sample(emitterRecord, sampler->next2D(), 0.);
+            Lo += its.mesh->getEmitter()->sample(emitterRecord, sampler->next2D(), 0.);
         }
 
         // BRDF sampling
         const BSDF *bsdf = its.mesh->getBSDF();
 
-        BSDFQueryRecord bsdfRecord(its.toLocal(-ray.d));
-        bsdfRecord.uv = its.uv;
+        BSDFQueryRecord bsdfRecord(its.toLocal(-ray.d), its.uv);
         bsdfRecord.measure = ESolidAngle;
 
         // Sample with bsdf
@@ -48,24 +47,21 @@ public:
         // source "em" is visible from the intersection point. 
         // For that, we create a ray object (shadow ray),
         // and compute the intersection
-        Ray3f sampleRay(its.p, its.toWorld(bsdfRecord.wo), Epsilon, std::numeric_limits<float>::infinity());
+        Ray3f sampleRay(its.p, its.toWorld(bsdfRecord.wo), Epsilon, INFINITY);
         Intersection shadowIts;
         if (scene->rayIntersect(sampleRay, shadowIts)){
             
             // Check if the object intersects is an emitter
             if (shadowIts.mesh->isEmitter()) {
-                EmitterQueryRecord emitterRecord(shadowIts.p);
-                emitterRecord.ref = sampleRay.o;
-                emitterRecord.emitter = shadowIts.mesh->getEmitter();
-                emitterRecord.wi = its.toWorld(bsdfRecord.wo); // ?? wi or wo
-                emitterRecord.n = shadowIts.shFrame.n;
-                emitterRecord.dist = (shadowIts.p - sampleRay.o).norm();
+                const Emitter *em = shadowIts.mesh->getEmitter();
+                // EmitterQueryRecord emitterRecord(em,its.p, shadowIts.p, shadowIts.shFrame.n, shadowIts.uv);
+                EmitterQueryRecord emitterRecord(em,sampleRay.o, shadowIts.p, shadowIts.shFrame.n, shadowIts.uv);
 
-                const Emitter *em = emitterRecord.emitter;
 
                 Color3f Li = em->eval(emitterRecord);
+                
                 float cosTheta = its.shFrame.n.dot(emitterRecord.wi);
-                Lo += Li * f ;
+                Lo += Li * f;
             }
             
         } else {
