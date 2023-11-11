@@ -57,7 +57,7 @@ public:
                 EmitterQueryRecord emitterRecord(shadowIts.p);
                 emitterRecord.ref = sampleRay.o;
                 emitterRecord.emitter = shadowIts.mesh->getEmitter();
-                emitterRecord.wi = its.toWorld(bsdfRecord.wo);
+                emitterRecord.wi = its.toWorld(bsdfRecord.wo); // ?? wi or wo
                 emitterRecord.n = shadowIts.shFrame.n;
                 emitterRecord.dist = (shadowIts.p - sampleRay.o).norm();
 

@@ -330,10 +330,10 @@ public:
     float pdf(const BSDFQueryRecord &bRec) const {
         /* This is a smooth BRDF -- return zero if the measure
        is wrong, or when queried for illumination on the backside */
-        // if (bRec.measure != ESolidAngle
-        //     || Frame::cosTheta(bRec.wi) <= 0
-        //     || Frame::cosTheta(bRec.wo) <= 0)
-        //     return 0.0f;
+        if (bRec.measure != ESolidAngle
+            || Frame::cosTheta(bRec.wi) <= 0
+            || Frame::cosTheta(bRec.wo) <= 0)
+            return 0.0f;
 
         // Fresnel coeficient
         float F = Reflectance::fresnel(Frame::cosTheta(bRec.wi), m_extIOR, m_intIOR);
@@ -341,7 +341,9 @@ public:
         // Roughness
         float alpha = m_alpha->eval(bRec.uv).getLuminance();
 
-        return F * Warp::squareToBeckmannPdf(bRec.wo, alpha) + (1 - F) * Warp::squareToCosineHemispherePdf(bRec.wo);
+        Vector3f wh = (bRec.wi + bRec.wo).normalized();
+
+        return F * Warp::squareToBeckmannPdf(wh, alpha) + (1 - F) * Warp::squareToCosineHemispherePdf(wh);
 
 		throw NoriException("RoughSubstrate::eval() is not yet implemented!");
     }
@@ -353,13 +355,13 @@ public:
         // BRDF value divided by the solid angle density and multiplied by the
         // cosine factor from the reflection equation, i.e.
         // return eval(bRec) * Frame::cosTheta(bRec.wo) / pdf(bRec);
-        // if (Frame::cosTheta(bRec.wi) <= 0)
-        //     return Color3f(0.0f);
+        if (Frame::cosTheta(bRec.wi) <= 0)
+            return Color3f(0.0f);
 
         // Fresnel coeficient
         float F = Reflectance::fresnel(Frame::cosTheta(bRec.wi), m_extIOR, m_intIOR);
         
-        cout << "F: " << F << endl;
+        // cout << "F: " << F << endl;
 
         // choose one component using Russian roulette based on the F value microfacet or diffuse
         if (_sample.x() < F) {
@@ -371,13 +373,22 @@ public:
             bRec.wo = (wh + bRec.wi) / 2;
 
             bRec.measure = ESolidAngle;
-            cout << "pdf: " << pdf(bRec) << endl;
+            float pdf_ = pdf(bRec);
+            if (abs(pdf_) < 1e-6){
+                return Color3f(0.0f);
+            }
+            // cout << "pdf: " << pdf(bRec) << endl;
             return eval(bRec) * Frame::cosTheta(bRec.wo) / pdf(bRec);
         }
         else {
             // Diffuse
             bRec.wo = Warp::squareToCosineHemisphere(_sample);
             bRec.measure = ESolidAngle;
+
+            float pdf_ = pdf(bRec);
+            if (abs(pdf_) < 1e-6){
+                return Color3f(0.0f);
+            }
 
             return eval(bRec) * Frame::cosTheta(bRec.wo) / pdf(bRec);
         }
