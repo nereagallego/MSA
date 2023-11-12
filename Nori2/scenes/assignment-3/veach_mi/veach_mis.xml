@@ -6,7 +6,7 @@
 	<integrator type="direct_mis"/>
 
 	<sampler type="independent">
-		<integer name="sampleCount" value="1024"/>
+		<integer name="sampleCount" value="4096"/>
 	</sampler>
 
 	<camera type="perspective">
