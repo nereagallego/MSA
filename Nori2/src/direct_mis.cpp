@@ -12,7 +12,7 @@ public:
 		/* No parameters this time */
 	}
 
-	Color3f Li(const Scene* scene, Sampler* sampler, const Ray3f& ray) const {
+    Color3f Li(const Scene* scene, Sampler* sampler, const Ray3f& ray) const {
 
 		Color3f Lo(0.);
 
@@ -44,8 +44,9 @@ public:
         Color3f Li_ems = em_ems->sample(emitterRecord, sampler->next2D(), 0.);
 
         float pdfPoint = em_ems->pdf(emitterRecord);
-        float pem = (pdfLight * pdfPoint);
 
+        
+        float pem_em = (pdfLight * pdfPoint);
 
         // BRDF sampling
         const BSDF *bsdf = its.mesh->getBSDF();
@@ -56,13 +57,7 @@ public:
         // Sample with bsdf
         Color3f f = bsdf->sample(bsdfRecord, sampler->next2D());
 
-        float pmat = bsdf->pdf(bsdfRecord);
-
-        float we = pem / (pem + pmat);
-        float wmat = pmat / (pem + pmat);
-
-
-
+        float pmat_mat = bsdf->pdf(bsdfRecord);
 
         // Here perform a visibility query, to check whether the light 
         // source "em" is visible from the intersection point. 
@@ -79,7 +74,11 @@ public:
             float cosTheta = its.shFrame.n.dot(emitterRecord.wi);
             Lo += Li_ems * its.mesh->getBSDF()->eval(bsdfRecord_ems) * cosTheta;
 
-            Lo = we * Lo/pem;
+            float pmat_em = bsdf->pdf(bsdfRecord_ems);
+
+            float we = pem_em / (pem_em + pmat_em);
+
+            Lo = we * Lo/pem_em;
         }
         
         // Here perform a visibility query, to check whether the light 
@@ -96,6 +95,9 @@ public:
                 // EmitterQueryRecord emitterRecord(em,its.p, shadowIts.p, shadowIts.shFrame.n, shadowIts.uv);
                 EmitterQueryRecord emitterRecord_mats(em_mats,sampleRay.o, shadowIts.p, shadowIts.shFrame.n, shadowIts.uv);
 
+                float pem_mat = em_mats->pdf(emitterRecord_mats);
+
+                float wmat = pmat_mat / (pmat_mat + pem_mat);
 
                 Color3f Li = em_mats->eval(emitterRecord_mats);
                 
@@ -104,13 +106,10 @@ public:
             }
             
         } else {
-            
             // If the shadow ray does not intersect any object, we 
             // add the background color
-            Lo += wmat * scene->getBackground(sampleRay) * f ;
-
+            Lo += scene->getBackground(sampleRay) * f;
         }
-
         return Lo;
 	}
 
