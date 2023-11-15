@@ -75,7 +75,7 @@ public:
 	}
 
 	std::string toString() const {
-		return "Direct Whitted Integrator []";
+		return "Direct Emmiter Sampling Integrator []";
 	}
 };
 
