@@ -28,7 +28,7 @@ public:
 			emitterRecord.wi = -ray.d;
 			emitterRecord.n = its.shFrame.n;
             // Add the visible radiance of the emitter
-            Lo += its.mesh->getEmitter()->sample(emitterRecord, sampler->next2D(), 0.);
+            return its.mesh->getEmitter()->sample(emitterRecord, sampler->next2D(), 0.);
         }
 
         // BRDF sampling
@@ -44,12 +44,10 @@ public:
         float q = std::max(0.05f, 1 - f.getLuminance());
         if (sampler->next1D() <= q)
             return Lo;
-        f /= 1 - q;
         
         Ray3f sampleRay(its.p, its.toWorld(bsdfRecord.wo), Epsilon, INFINITY);
-        Intersection shadowIts;
 
-        Lo += f * Li(scene, sampler, sampleRay) * std::abs(sampleRay.d.dot(its.shFrame.n)) / q;
+        Lo += f * Li(scene, sampler, sampleRay);
         
         return Lo;
 	}

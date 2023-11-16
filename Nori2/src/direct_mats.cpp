@@ -60,7 +60,6 @@ public:
 
                 Color3f Li = em->eval(emitterRecord);
                 
-                float cosTheta = its.shFrame.n.dot(emitterRecord.wi);
                 Lo += Li * f;
             }
             
