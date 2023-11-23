@@ -101,7 +101,6 @@ public:
 
                 Color3f Li = em_mats->eval(emitterRecord_mats);
                 
-                float cosTheta = its.shFrame.n.dot(emitterRecord_mats.wi);
                 Lo += wmat * Li * f;
             }
             
