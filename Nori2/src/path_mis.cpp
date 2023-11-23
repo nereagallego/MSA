@@ -106,14 +106,14 @@ public:
         // cout << (pdfLight * pdfPoint) << endl;
         // Check if the light is visible
         Intersection itsLight;
-        if (!(scene->rayIntersect(shadowRay, itsLight) && itsLight.t <= (emitterRecord.dist - Epsilon)) && bsdfRecord.measure != EDiscrete) {
+        if ((scene->rayIntersect(shadowRay, itsLight) && itsLight.t <= (emitterRecord.dist - Epsilon)) && bsdfRecord.measure != EDiscrete) {
             BSDFQueryRecord bsdfRecord(its.toLocal(-ray.d), its.toLocal(emitterRecord.wi), its.uv, ESolidAngle);
             float cosTheta = its.shFrame.n.dot(emitterRecord.wi);
 
             float pem_mat = bsdf->pdf(bsdfRecord);
             float wmat = pmat_mat / (pmat_mat + pem_mat);
 
-            Li_contrib = Li_light * its.mesh->getBSDF()->eval(bsdfRecord) * cosTheta * wmat / (pdfLight * pdfPoint);
+            Li_contrib = Li_light * its.mesh->getBSDF()->eval(bsdfRecord) * cosTheta  / (pdfLight * pdfPoint);
         }
         
         // cout << "Li_contrib" << Li_contrib << endl;
