@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<scene>
+	<integrator type="path"/>
+	<sampler type="independent">
+		<integer name="sampleCount" value="64"/>
+	</sampler>
+	<camera type="perspective">
+		<float name="fov" value="39.597755335771296"/>
+		<float name="nearClip" value="0.10000000149011612"/>
+		<float name="farClip" value="100.0"/>
+		<integer name="width" value="1920"/>
+		<integer name="height" value="1080"/>
+		<transform name="toWorld">
+			<scale value="1.000000 1.000000 -1.000000"/>
+			<matrix value="0.6859206557273865,-0.32401347160339355,0.6515582203865051,7.355627536773682,0.7276763319969177,0.305420845746994,-0.6141703724861145,-6.902408599853516,0.0,0.8953956365585327,0.44527140259742737,4.891147136688232,0.0,0.0,0.0,1.0"/>
+		</transform>
+	</camera>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Cube_Material.obj"/>
+		<bsdf type="roughconductor" name="Material">
+			<color name="kd" value="0.571089,0.588557,0.553934"/>
+			<float name="alpha" value="0.265432"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Plane_Material.002.obj"/>
+		<bsdf type="diffuse" name="Material.002">
+			<color name="albedo" value="0.800000,0.800000,0.800000"/>
+		</bsdf>
+		<emitter type="area">
+			<color name="radiance" value="11.799999,11.799999,11.799999"/>
+		</emitter>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Plane.001_Material.001.obj"/>
+		<bsdf type="diffuse" name="Material.001">
+			<color name="albedo" value="0.056255,0.325697,0.800189"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Cube.001_Material.003.obj"/>
+		<bsdf type="roughconductor" name="Material.003">
+			<color name="kd" value="1.000000,0.779871,0.012456"/>
+			<float name="alpha" value="0.265432"/>
+		</bsdf>
+	</mesh>
+</scene>
