@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<scene>
+	<integrator type="path_mis"/>
+	<sampler type="independent">
+		<integer name="sampleCount" value="&lt;_PropertyDeferred, &lt;built-in function IntProperty&gt;, {'name': 'Numbers of camera rays', 'description': 'Number of camera ray', 'default': 32}&gt;"/>
+	</sampler>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Cube_Fractured Cube.obj"/>
+		<bsdf type="diffuse" name="Fractured Cube">
+			<color name="albedo" value="0.800000,0.800000,0.800000"/>
+		</bsdf>
+	</mesh>
+</scene>

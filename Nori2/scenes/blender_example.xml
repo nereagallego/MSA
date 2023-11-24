@@ -20,7 +20,7 @@
 		<color name="radiance" value="1000.000000,1000.000000,1000.000000"/>
 	</emitter>
 	<mesh type="obj">
-		<string name="filename" value="meshes/Cube_Material.obj"/>
+		<string name="filename" value="meshes/Cube_Fractured_Cube.obj"/>
 		<bsdf type="diffuse" name="Material">
 			<color name="albedo" value="0.800000,0.800000,0.800000"/>
 		</bsdf>

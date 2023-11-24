@@ -2,46 +2,128 @@
 <scene>
 	<integrator type="path_mis"/>
 	<sampler type="independent">
-		<integer name="sampleCount" value="64"/>
+		<integer name="sampleCount" value="128"/>
 	</sampler>
 	<camera type="perspective">
 		<float name="fov" value="39.597755335771296"/>
 		<float name="nearClip" value="0.10000000149011612"/>
-		<float name="farClip" value="100.0"/>
+		<float name="farClip" value="1000.0"/>
 		<integer name="width" value="1920"/>
-		<integer name="height" value="1080"/>
+		<integer name="height" value="1920"/>
 		<transform name="toWorld">
 			<scale value="1.000000 1.000000 -1.000000"/>
-			<matrix value="0.6859206557273865,-0.32401347160339355,0.6515582203865051,7.355627536773682,0.7276763319969177,0.305420845746994,-0.6141703724861145,-6.902408599853516,0.0,0.8953956365585327,0.44527140259742737,4.891147136688232,0.0,0.0,0.0,1.0"/>
+			<matrix value="0.70710688829422,-0.40824395418167114,0.5773531794548035,36.12300491333008,0.7071066498756409,0.4082441031932831,-0.5773533582687378,-27.10523223876953,0.0,0.8165008425712585,0.5773442387580872,29.656675338745117,0.0,0.0,0.0,1.0"/>
 		</transform>
 	</camera>
 	<mesh type="obj">
-		<string name="filename" value="meshes/Cube_Material.obj"/>
-		<bsdf type="roughconductor" name="Material">
-			<color name="kd" value="0.571089,0.588557,0.553934"/>
-			<float name="alpha" value="0.265432"/>
+		<string name="filename" value="meshes/bg_bg.obj"/>
+		<bsdf type="roughconductor" name="bg">
+			<color name="kd" value="0.054594,0.251923,0.800400"/>
+			<float name="alpha" value="0.500000"/>
 		</bsdf>
 	</mesh>
 	<mesh type="obj">
-		<string name="filename" value="meshes/Plane_Material.002.obj"/>
-		<bsdf type="diffuse" name="Material.002">
+		<string name="filename" value="meshes/bg.001_bg.obj"/>
+		<bsdf type="roughconductor" name="bg">
+			<color name="kd" value="0.054594,0.251923,0.800400"/>
+			<float name="alpha" value="0.500000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Plane.011_slippers.obj"/>
+		<bsdf type="diffuse" name="slippers">
 			<color name="albedo" value="0.800000,0.800000,0.800000"/>
 		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Plane.013_slippers.obj"/>
+		<bsdf type="diffuse" name="slippers">
+			<color name="albedo" value="0.800000,0.800000,0.800000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Cylinder.034_candle.obj"/>
+		<bsdf type="diffuse" name="bottle">
+			<color name="albedo" value="0.800000,0.800000,0.800000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Cylinder.034_flare.obj"/>
+		<bsdf type="diffuse" name="flare">
+			<color name="albedo" value="0.800000,0.800000,0.800000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Cylinder.001_candle.obj"/>
+		<bsdf type="diffuse" name="bottle">
+			<color name="albedo" value="0.800000,0.800000,0.800000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Cylinder.001_flare.obj"/>
+		<bsdf type="diffuse" name="flare">
+			<color name="albedo" value="0.800000,0.800000,0.800000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Cylinder.009_soap bottle.obj"/>
+		<bsdf type="diffuse" name="bottle">
+			<color name="albedo" value="0.800000,0.800000,0.800000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Cylinder.009_white plumbing.obj"/>
+		<bsdf type="diffuse" name="white plumbing">
+			<color name="albedo" value="0.800000,0.800000,0.800000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Cylinder.010_dark plumbing.obj"/>
+		<bsdf type="diffuse" name="dark plumbing">
+			<color name="albedo" value="0.800000,0.800000,0.800000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Cylinder.011_dark plumbing.obj"/>
+		<bsdf type="diffuse" name="dark plumbing">
+			<color name="albedo" value="0.800000,0.800000,0.800000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/bottle_bottle.obj"/>
+		<bsdf type="diffuse" name="bottle">
+			<color name="albedo" value="0.800000,0.800000,0.800000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/bottle_just white.obj"/>
+		<bsdf type="diffuse" name="bottle">
+			<color name="albedo" value="0.800000,0.800000,0.800000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Cylinder.014_cream.obj"/>
+		<bsdf type="diffuse" name="cream">
+			<color name="albedo" value="0.800000,0.800000,0.800000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Cylinder.015_cream.obj"/>
+		<bsdf type="diffuse" name="cream">
+			<color name="albedo" value="0.800000,0.800000,0.800000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/soap_soap.obj"/>
+		<bsdf type="diffuse" name="soap">
+			<color name="albedo" value="0.800000,0.800000,0.800000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/light.obj"/>
+
 		<emitter type="area">
-			<color name="radiance" value="11.799999,11.799999,11.799999"/>
+			<color name="radiance" value="40 40 40"/>
 		</emitter>
-	</mesh>
-	<mesh type="obj">
-		<string name="filename" value="meshes/Plane.001_Material.001.obj"/>
-		<bsdf type="diffuse" name="Material.001">
-			<color name="albedo" value="0.056255,0.325697,0.800189"/>
-		</bsdf>
-	</mesh>
-	<mesh type="obj">
-		<string name="filename" value="meshes/Cube.001_Material.003.obj"/>
-		<bsdf type="roughconductor" name="Material.003">
-			<color name="kd" value="1.000000,0.779871,0.012456"/>
-			<float name="alpha" value="0.265432"/>
-		</bsdf>
 	</mesh>
 </scene>
