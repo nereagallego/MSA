@@ -83,7 +83,7 @@ public:
                 // EmitterQueryRecord emitterRecord(em,its.p, shadowIts.p, shadowIts.shFrame.n, shadowIts.uv);
                 EmitterQueryRecord emitterRecord_mats(em_mats,sampleRay.o, itsSample.p, itsSample.shFrame.n, itsSample.uv);
                 
-                float pem_mat = em_mats->pdf(emitterRecord_mats);
+                float pem_mat = em_mats->pdf(emitterRecord);
 
                 float wmat = pmat_mat / (pmat_mat + pem_mat);
 
