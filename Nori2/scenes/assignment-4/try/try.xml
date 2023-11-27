@@ -15,9 +15,32 @@
 	</camera>
 
 	<sampler type="independent">
-		<integer name="sampleCount" value="128"/>
+		<integer name="sampleCount" value="4096"/>
 	</sampler>
 
+	<mesh type="obj">
+		<string name="filename" value="meshes/walls.obj"/>
+
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.725 0.71 0.68"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/rightwall.obj"/>
+
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.161 0.133 0.427"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/leftwall.obj"/>
+
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.630 0.065 0.05"/>
+		</bsdf>
+	</mesh>
 
 	<mesh type="obj">
 		<string name="filename" value="meshes/sphere1.obj"/>
@@ -38,38 +61,4 @@
 			<color name="radiance" value="40 40 40"/>
 		</emitter>
 	</mesh>
-
-	<mesh type="obj">
-		<string name="filename" value="meshes/rightwall.obj"/>
-
-		<bsdf type="diffuse">
-			<color name="albedo" value="0.161 0.133 0.427"/>
-		</bsdf>
-	</mesh>
-
-	<mesh type="obj">
-		<string name="filename" value="meshes/leftwall.obj"/>
-
-		<bsdf type="diffuse">
-			<color name="albedo" value="0.630 0.065 0.05"/>
-		</bsdf>
-	</mesh>
-
-	<mesh type="obj">
-        <string name="filename" value="meshes/ground.obj"/>
-        <transform name="toWorld">
-             <scale value="-1,1,1" />
-        </transform>
-    
-        <bsdf type="diffuse">
-            <texture type="textmap" name="albedo">
-                <string name="fileName" value="WoodenPlanks10.png"/>
-                <string name="interpolation" value="Linear"/>                 
-				<string name="extension" value="REPEAT"/>                 
-				<string name="projection" value="FLAT"/>
-            </texture>
-        
-            
-        </bsdf>
-    </mesh>
 </scene>
