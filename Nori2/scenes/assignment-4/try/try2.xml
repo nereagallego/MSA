@@ -18,7 +18,7 @@
 	<mesh type="obj">
 		<string name="filename" value="meshes/leftWall_leftWall.obj"/>
 		<bsdf type="disney" name="leftWall">
-			<color name="baseColor" value="0.800000,0.800000,0.800000"/>
+			<color name="baseColor" value="0.045429,0.800339,0.669662"/>
 			<float name="metallic" value="0.000000"/>
 			<float name="subsurface" value="0.000000"/>
 			<float name="specular" value="0.000000"/>
@@ -50,7 +50,7 @@
 	<mesh type="obj">
 		<string name="filename" value="meshes/rightWall_rightWall.obj"/>
 		<bsdf type="disney" name="rightWall">
-			<color name="baseColor" value="0.800000,0.800000,0.800000"/>
+			<color name="baseColor" value="0.773204,0.033189,0.800490"/>
 			<float name="metallic" value="0.000000"/>
 			<float name="subsurface" value="0.000000"/>
 			<float name="specular" value="0.000000"/>
@@ -66,7 +66,7 @@
 	<mesh type="obj">
 		<string name="filename" value="meshes/leftSphere_leftSphere.obj"/>
 		<bsdf type="disney" name="leftSphere">
-			<color name="baseColor" value="0.800000,0.800000,0.800000"/>
+			<color name="baseColor" value="0.725000,0.710000,0.680000"/>
 			<float name="metallic" value="0.000000"/>
 			<float name="subsurface" value="0.000000"/>
 			<float name="specular" value="0.000000"/>
@@ -82,7 +82,7 @@
 	<mesh type="obj">
 		<string name="filename" value="meshes/rightSphere_rightSphere.obj"/>
 		<bsdf type="disney" name="rightSphere">
-			<color name="baseColor" value="0.800000,0.800000,0.800000"/>
+			<color name="baseColor" value="0.725000,0.710000,0.680000"/>
 			<float name="metallic" value="0.000000"/>
 			<float name="subsurface" value="0.000000"/>
 			<float name="specular" value="0.000000"/>
@@ -98,7 +98,7 @@
 	<mesh type="obj">
 		<string name="filename" value="meshes/backWall_backWall.obj"/>
 		<bsdf type="disney" name="backWall">
-			<color name="baseColor" value="0.800000,0.800000,0.800000"/>
+			<color name="baseColor" value="0.725000,0.710000,0.680000"/>
 			<float name="metallic" value="0.000000"/>
 			<float name="subsurface" value="0.000000"/>
 			<float name="specular" value="0.000000"/>
@@ -114,7 +114,7 @@
 	<mesh type="obj">
 		<string name="filename" value="meshes/ceiling_ceiling.obj"/>
 		<bsdf type="disney" name="ceiling">
-			<color name="baseColor" value="0.800000,0.800000,0.800000"/>
+			<color name="baseColor" value="0.725000,0.710000,0.680000"/>
 			<float name="metallic" value="0.000000"/>
 			<float name="subsurface" value="0.000000"/>
 			<float name="specular" value="0.000000"/>
@@ -129,18 +129,8 @@
 	</mesh>
 	<mesh type="obj">
 		<string name="filename" value="meshes/Ground_Plane_Material.005.obj"/>
-		<bsdf type="disney" name="Material.005">
-			<color name="baseColor" value="0.800000,0.800000,0.800000"/>
-			<float name="metallic" value="0.000000"/>
-			<float name="subsurface" value="0.000000"/>
-			<float name="specular" value="0.000000"/>
-			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
-			<float name="roughness" value="1.000000"/>
-			<float name="anisotropic" value="0.000000"/>
-			<float name="sheen" value="0.000000"/>
-			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
-			<float name="clearcoat" value="0.000000"/>
-			<float name="clearcoatGloss" value="0.030000"/>
+		<bsdf type="diffuse" name="Material.005">
+			<color name="albedo" value="0.800000,0.800000,0.800000"/>
 		</bsdf>
 	</mesh>
 </scene>
