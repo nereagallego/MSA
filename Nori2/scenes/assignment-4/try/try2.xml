@@ -18,6 +18,7 @@
 
 	<mesh type="obj">
 		<string name="filename" value="meshes/leftWall_leftWall.obj"/>
+
 		<bsdf type="diffuse">
 			<color name="albedo" value="0.630 0.065 0.05"/>
 		</bsdf>
@@ -32,39 +33,51 @@
 
 	<mesh type="obj">
 		<string name="filename" value="meshes/rightWall_rightWall.obj"/>
+
 		<bsdf type="diffuse">
 			<color name="albedo" value="0.161 0.133 0.427"/>
+
 		</bsdf>
 	</mesh>
 
 	<mesh type="obj">
 		<string name="filename" value="meshes/leftSphere_leftSphere.obj"/>
+
 		<bsdf type="dielectric"/>
+
 	</mesh>
 
 	<mesh type="obj">
 		<string name="filename" value="meshes/rightSphere_rightSphere.obj"/>
+
 		<bsdf type="dielectric"/>
+
 	</mesh>
 
 	<mesh type="obj">
 		<string name="filename" value="meshes/backWall_backWall.obj"/>
+
 		<bsdf type="diffuse">
 			<color name="albedo" value="0.725 0.71 0.68"/>
+
 		</bsdf>
 	</mesh>
 
 	<mesh type="obj">
 		<string name="filename" value="meshes/ceiling_ceiling.obj"/>
+
 		<bsdf type="diffuse">
 			<color name="albedo" value="0.725 0.71 0.68"/>
+
 		</bsdf>
 	</mesh>
 
 	<mesh type="obj">
 		<string name="filename" value="meshes/Ground_Plane_Material.005.obj"/>
+
 		<bsdf type="diffuse">
 			<color name="albedo" value="0.725 0.71 0.68"/>
+
 		</bsdf>
 	</mesh>
 	
