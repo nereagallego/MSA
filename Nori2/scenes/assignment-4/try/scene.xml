@@ -1,0 +1,136 @@
+<?xml version="1.0" ?>
+<scene>
+	<integrator type="path_mis"/>
+	<sampler type="independent">
+		<integer name="sampleCount" value="4096"/>
+	</sampler>
+	<camera type="perspective">
+		<float name="fov" value="19.939412225153244"/>
+		<float name="nearClip" value="0.10000000149011612"/>
+		<float name="farClip" value="100.0"/>
+		<integer name="width" value="1920"/>
+		<integer name="height" value="1080"/>
+		<transform name="toWorld">
+			<scale value="1.000000 1.000000 -1.000000"/>
+			<matrix value="1.0,2.085012680764402e-15,-1.7484556735780643e-07,-0.01633080095052719,-1.7484555314695172e-07,1.1924882414859894e-08,-1.0000001192092896,-17.98656463623047,0.0,1.0000001192092896,1.1924882414859894e-08,0.3592751622200012,0.0,0.0,0.0,1.0"/>
+		</transform>
+	</camera>
+	<mesh type="obj">
+		<string name="filename" value="meshes/leftWall_leftWall.obj"/>
+		<bsdf type="disney" name="leftWall">
+			<color name="baseColor" value="0.045429,0.800339,0.669662"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/rightWall_rightWall.obj"/>
+		<bsdf type="disney" name="rightWall">
+			<color name="baseColor" value="0.773204,0.033189,0.800490"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/leftSphere_leftSphere.obj"/>
+		<bsdf type="disney" name="leftSphere">
+			<color name="baseColor" value="0.725000,0.710000,0.680000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/rightSphere_rightSphere.obj"/>
+		<bsdf type="disney" name="rightSphere">
+			<color name="baseColor" value="0.725000,0.710000,0.680000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/backWall_backWall.obj"/>
+		<bsdf type="disney" name="backWall">
+			<color name="baseColor" value="0.725000,0.710000,0.680000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/ceiling_ceiling.obj"/>
+		<bsdf type="disney" name="ceiling">
+			<color name="baseColor" value="0.725000,0.710000,0.680000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Ground_Plane_Material.005.obj"/>
+		<bsdf type="diffuse" name="Material.005">
+			<color name="albedo" value="0.800000,0.800000,0.800000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/light_light.001.obj"/>
+		<bsdf type="disney" name="light.001">
+			<color name="baseColor" value="0.800000,0.800000,0.800000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+</scene>
