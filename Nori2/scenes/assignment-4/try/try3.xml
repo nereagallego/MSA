@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <scene>
 	<integrator type="path_mis"/>
+
 	<sampler type="independent">
 		<integer name="sampleCount" value="4096"/>
 	</sampler>
+	
 	<camera type="perspective">
 		<float name="fov" value="19.939412225153244"/>
 		<float name="nearClip" value="0.10000000149011612"/>
