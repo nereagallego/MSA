@@ -68,12 +68,7 @@
 				<string name="extension" value="REPEAT"/>                 
 				<string name="projection" value="FLAT"/>
             </texture>
-            <texture type="textmap" name="albedo">
-                <string name="fileName" value="WoodenPlanks10_SPEC.png"/>
-                <string name="interpolation" value="Linear"/>                 
-				<string name="extension" value="REPEAT"/>                 
-				<string name="projection" value="FLAT"/>
-            </texture>
+        
             
         </bsdf>
     </mesh>
