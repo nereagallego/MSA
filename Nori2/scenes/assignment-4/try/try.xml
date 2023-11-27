@@ -15,7 +15,7 @@
 	</camera>
 
 	<sampler type="independent">
-		<integer name="sampleCount" value="4096"/>
+		<integer name="sampleCount" value="128"/>
 	</sampler>
 
 	<mesh type="obj">
@@ -61,4 +61,27 @@
 			<color name="radiance" value="40 40 40"/>
 		</emitter>
 	</mesh>
+
+	<mesh type="obj">
+        <string name="filename" value="meshes/Ground.obj"/>
+        <transform name="toWorld">
+             <scale value="-1,1,1" />
+        </transform>
+    
+        <bsdf type="diffuse">
+            <texture type="textmap" name="albedo">
+                <string name="fileName" value="WoodenPlanks10.png"/>
+                <string name="interpolation" value="Linear"/>                 
+				<string name="extension" value="REPEAT"/>                 
+				<string name="projection" value="FLAT"/>
+            </texture>
+            <texture type="textmap" name="albedo">
+                <string name="fileName" value="WoodenPlanks10_SPEC.png"/>
+                <string name="interpolation" value="Linear"/>                 
+				<string name="extension" value="REPEAT"/>                 
+				<string name="projection" value="FLAT"/>
+            </texture>
+            
+        </bsdf>
+    </mesh>
 </scene>
