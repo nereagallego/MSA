@@ -2,7 +2,7 @@
 <scene>
 	<integrator type="path_mis"/>
 	<sampler type="independent">
-		<integer name="sampleCount" value="&lt;_PropertyDeferred, &lt;built-in function IntProperty&gt;, {'name': 'Numbers of camera rays', 'description': 'Number of camera ray', 'default': 32}&gt;"/>
+		<integer name="sampleCount" value="4096"/>
 	</sampler>
 	<camera type="perspective">
 		<float name="fov" value="19.939412225153244"/>
