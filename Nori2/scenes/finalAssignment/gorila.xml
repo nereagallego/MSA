@@ -46,7 +46,7 @@
 		<string name="filename" value="meshes/gorila.obj"/>
 
 		<bsdf type="diffuse">
-			<color name="albedo" value="1 0 0.5"/>
+			<color name="albedo" value="0.254 0.154 0.181"/>
 		</bsdf>
 	</mesh>
 
