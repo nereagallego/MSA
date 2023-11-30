@@ -1,0 +1,10 @@
+Diamond:
+- Spectral Rendering and Wavelength-based Dispersion
+- Photon mapper / Bidirectional path tracer
+
+
+
+
+
+******** 1) Manejar un objeto con 16 longitudes de onda y quedarte con una aleatoriamente (un solo indice de refracción)
+******** 2) Hacer 16 ejecuciones del foton mapper (16 imágenes) y mezclarlas haciendo la media (mirando las equivalencias de RGB longitud de onda)
