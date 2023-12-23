@@ -148,6 +148,9 @@ public:
      * */
     virtual EClassType getClassType() const { return EEmitter; }
 
+    // Get the area of the mesh
+    virtual float getArea() const = 0;
+
     /**
      * \brief Set the mesh if the emitter is attached to a mesh
      * */
@@ -156,6 +159,7 @@ public:
 	EmitterType getEmitterType() const { return m_type; }
 
 	bool isDelta() const { return m_type == EmitterType::EMITTER_POINT; }
+
 
 protected:
     /// Pointer to the mesh if the emitter is attached to a mesh

@@ -53,6 +53,11 @@ public:
 		return m_radiance;
 	}
 
+	// Get the area of the mesh
+	virtual float getArea() const {
+		return 0.;
+	}
+
 protected:
 	Point3f m_position;
 	Color3f m_radiance;
