@@ -67,6 +67,7 @@ add_executable(nori
   include/nori/vector.h
   include/nori/warp.h
   include/nori/reflectance.h
+  include/nori/nanoflann.hpp
 
   # Source code files
   src/accel.cpp
@@ -105,6 +106,7 @@ add_executable(nori
   src/path.cpp
   src/path_nee.cpp
   src/path_mis.cpp
+  src/photon_mapping.cpp
 )
 
 add_definitions(${NANOGUI_EXTRA_DEFS})

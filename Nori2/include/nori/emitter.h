@@ -149,7 +149,7 @@ public:
     virtual EClassType getClassType() const { return EEmitter; }
 
     // Get the area of the mesh
-    virtual float getArea() const = 0;
+    // virtual float getArea() const = 0;
 
     /**
      * \brief Set the mesh if the emitter is attached to a mesh

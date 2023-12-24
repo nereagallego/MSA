@@ -116,16 +116,16 @@ public:
 	}
 
 	// Get the area of the mesh
-	virtual float getArea() const {
-		if (!m_mesh)
-			throw NoriException("There is no shape attached to this Area light!");
+	// virtual float getArea() const {
+	// 	if (!m_mesh)
+	// 		throw NoriException("There is no shape attached to this Area light!");
 
-		float area = 0.f; 
-		for(n_UINT i = 0; i < m_mesh->getTriangleCount(); i++){
-			area += m_mesh->surfaceArea(i);
-		}
-		return area;
-	}
+	// 	float area = 0.f; 
+	// 	for(n_UINT i = 0; i < m_mesh->getTriangleCount(); i++){
+	// 		area += m_mesh->surfaceArea(i);
+	// 	}
+	// 	return area;
+	// }
 
 protected:
 	Texture* m_radiance;
