@@ -76,11 +76,11 @@ NORI_NAMESPACE_BEGIN
             cout<<"photon_mapping..."<<endl;
             std::cout<<"Generating "<< max_photon_count << " photons for Global Photon Map"<< std::endl;
             std::cout<<"Generating "<< caustic_max_photon_count << " photons for Caustic Photon Map"<< std::endl;
-            int total_count = 0;
+        
 
             {
                 std::unique_ptr<Sampler> sampler(scene->getSampler()->clone());
-                float totalArea = 0;
+               
                 Color3f totalPower = Color3f(0.0f);
 
                 /* collect light sources */
@@ -112,6 +112,7 @@ NORI_NAMESPACE_BEGIN
                     Color3f flux = emitter->power() * M_PI * 4 / photon_count;
 
                     while(n_emitted++ < photon_count){
+                        // cout << "\r" << "Photon Mapping Global: " << n_emitted << "/" << photon_count << std::endl;
                         Intersection x,y;
                         Point3f y0_p;
                         Normal3f y0_n;
@@ -190,7 +191,8 @@ NORI_NAMESPACE_BEGIN
                     // Calculate the flux of each photon asuming the light source is a sphere
                     Color3f flux = emitter->power() * M_PI * 4 / caustic_photon_count;
 
-                    while(n_emitted < caustic_photon_count){
+                    while(n_emitted++ < caustic_photon_count){
+                        // cout << "\r" << "Photon Mapping Caustic: " << n_emitted << "/" << caustic_photon_count << std::endl;
 
                         Intersection x,y;
                         Point3f  y0_p;
@@ -317,9 +319,11 @@ NORI_NAMESPACE_BEGIN
 
             /*========================================= Begin ==========================================*/
             /* direct illumination from light sources */
-            for(Mesh *mesh:m_light_src){
+            
+            for(Emitter *emitter:scene->getLights()){
                 Point3f y_p; Normal3f y_n;
-                mesh->getEmitter()->samplePosition(sampler->next1D(), sampler->next2D(), y_p, y_n);
+                EmitterQueryRecord emitterRecord;
+                mesh->getEmitter()->sample(emitterRecord, sampler->next2D(), 0.);
 
                 /* G(x<->y) */
                 x_wo = y_p - x.p;
@@ -338,7 +342,7 @@ NORI_NAMESPACE_BEGIN
                     x_bRec.wo = x.toLocal(x_wo);
 
                     rad +=  throughput * mesh->getEmitter()->power() * x_BSDF->eval(x_bRec) * G
-                            / mesh->getEmitter()->pdf() ;
+                            / mesh->getEmitter()->pdf(emitterRecord);
                 }
             }
 
@@ -381,6 +385,117 @@ NORI_NAMESPACE_BEGIN
 
             return rad;
         }
+
+        // Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const {
+        //     /* Find the surface x that is visible in the requested direction */
+        //     Intersection x, y;
+        //     if(!scene->rayIntersect(ray, x))
+        //         return Color3f(0.0f);
+
+        //     /* initiation */
+        //     Vector3f x_wi = -ray.d, x_wo;
+        //     Color3f rad = Color3f(0.0f), throughput = Color3f(1.0f);
+        //     BSDFQueryRecord x_bRec = BSDFQueryRecord(x.toLocal(x_wi));
+        //     const BSDF *x_BSDF = x.mesh->getBSDF();
+
+        //     /* collect light sources */
+        //     std::vector<Mesh *> m_light_src;
+        //     for (Mesh *mesh:scene->getMeshes()) {
+        //         if (mesh->isEmitter())
+        //             m_light_src.push_back(mesh);
+        //     }
+
+        //     /* pass through all the specular surface */
+        //     {
+        //         while (!x_BSDF->isDiffuse()) {
+        //             x_BSDF->sample(x_bRec, sampler->next2D());
+        //             if (!scene->rayIntersect(Ray3f(x.p, -(x_wi = -x.toWorld(x_bRec.wo))), y))
+        //                 return Color3f(0.0f);
+        //             x = y;
+        //             x_bRec.wi = x.toLocal(x_wi);
+        //             x_BSDF = x.mesh->getBSDF();
+        //         }
+
+        //         x_bRec.measure = ESolidAngle;
+
+        //         /* le */
+        //         if (x.mesh->isEmitter()) {
+        //             if (x.shFrame.n.dot(x_wi) > 0) {
+        //                 return x.mesh->getEmitter()->power();
+        //             } else {
+        //                 return Color3f(0.0f);
+        //             }
+        //         }
+        //     }
+
+
+        //     /*========================================= Begin ==========================================*/
+        //     /* direct illumination from light sources */
+        //     for(Mesh *mesh:m_light_src){
+        //         Point3f y_p; Normal3f y_n;
+        //         EmitterQueryRecord emitterRecord;
+        //         mesh->getEmitter()->sample(emitterRecord, sampler->next2D(), 0.);
+
+        //         /* G(x<->y) */
+        //         x_wo = y_p - x.p;
+        //         float distance = x_wo.norm();
+        //         x_wo.normalize();
+
+        //         if (scene->rayIntersect(Ray3f(x.p, x_wo), y)
+        //             && std::abs(distance - y.t) < std::pow(10, -4)) {
+        //             /*G = <x_n, wo>*<y_n, -wo> /r^2 */
+        //             float G;
+        //             G = x.shFrame.n.dot(x_wo);       if (G < 0) continue;
+        //             G *= y_n.dot(-x_wo);             if (G < 0) continue;
+        //             G /= (y.t * y.t);
+
+        //             /* L_direct = Le * brdf(x, wi, wo) * G(x<->y)  */
+        //             x_bRec.wo = x.toLocal(x_wo);
+
+        //             rad +=  throughput * mesh->getEmitter()->power() * x_BSDF->eval(x_bRec) * G
+        //                     / mesh->getEmitter()->pdf(emitterRecord);
+        //         }
+        //     }
+
+        //     /* caustic effect */
+        //     rad += throughput * estimateIrradiance(x, x_wi, EPhotonMap::ECausticPhotonMap);
+
+        //     /* next event */
+        //     {
+        //         throughput *= x_BSDF->sample(x_bRec, sampler->next2D());
+
+        //         if (!scene->rayIntersect(Ray3f(x.p, -(x_wi = -x.toWorld(x_bRec.wo))), y)) {
+        //             return rad;
+        //         }
+        //         x = y;
+        //         x_bRec.wi = x.toLocal(x_wi);
+        //         x_BSDF = x.mesh->getBSDF();
+
+        //         bool occlued_by_specular_object = false;
+        //         while (!x_BSDF->isDiffuse()) {
+        //             occlued_by_specular_object = true;
+        //             x_BSDF->sample(x_bRec, sampler->next2D());
+        //             if (!scene->rayIntersect(Ray3f(x.p, -(x_wi = -x.toWorld(x_bRec.wo))), y))
+        //                 return Color3f(0.0f);
+        //             x = y;
+        //             x_bRec.wi = x.toLocal(x_wi);
+        //             x_BSDF = x.mesh->getBSDF();
+        //         }
+        //         x_bRec.measure = ESolidAngle;
+
+        //         /* le */
+        //         if (occlued_by_specular_object && x.mesh->isEmitter() && x.shFrame.n.dot(x_wi) > 0) {
+        //             rad += throughput * x.mesh->getEmitter()->power();
+        //         }
+        //     }
+
+        //     /*======================================== End ===========================================*/
+
+        //     /* use RADIANCE ESTIMATION for indirect illumination */
+        //     rad += throughput * estimateIrradiance(x, x_wi, EPhotonMap::EGlobalPhotonMap);
+
+        //     return rad;
+        // }
 
         Color3f estimateIrradiance(Intersection position, Vector3f wi, EPhotonMap map) const {
             Intersection x = position;
