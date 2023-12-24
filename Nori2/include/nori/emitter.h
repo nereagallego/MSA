@@ -156,6 +156,11 @@ public:
      * */
     void setMesh(Mesh * mesh) { m_mesh = mesh; }
 
+    /**
+     * \brief Get the mesh if the emitter is attached to a mesh
+     * */
+    Mesh * getMesh() { return m_mesh; }
+
 	EmitterType getEmitterType() const { return m_type; }
 
 	bool isDelta() const { return m_type == EmitterType::EMITTER_POINT; }

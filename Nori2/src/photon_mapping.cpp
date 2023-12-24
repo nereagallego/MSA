@@ -84,16 +84,14 @@ NORI_NAMESPACE_BEGIN
                 Color3f totalPower = Color3f(0.0f);
 
                 /* collect light sources */
-                std::vector<Mesh *> m_light_src;
-                for (Mesh *mesh:scene->getMeshes()) {
-                    if (mesh->isEmitter()) {
-                        m_light_src.push_back(mesh);
-                    }
+                std::vector<Emitter *> lights;
+                for (Emitter *emitter:scene->getLights()) {
+                    lights.push_back(emitter);
                 }
 
                 /* sum up the power of all light sources */
-                for(Mesh *mesh:m_light_src){
-                    totalPower += mesh->getEmitter()->power();
+                for(Emitter *emitter:lights){
+                    totalPower += emitter->power();
                 }
 
                 float totalPowerLuminance = 0.2126f * totalPower.r() + 0.7152f * totalPower.g() + 0.0722f * totalPower.b();
@@ -101,8 +99,7 @@ NORI_NAMESPACE_BEGIN
                 /*
                  * build the GLOBAL PHOTON MAP
                  * */
-                for(Mesh *mesh:m_light_src){
-                    Emitter *emitter = mesh->getEmitter();
+                for(Emitter *emitter:lights){
                     float emitterPowerLuminance = 0.2126f * emitter->power().r() + 0.7152f * emitter->power().g() + 0.0722f * emitter->power().b();
 
                     int photon_count = max_photon_count * emitterPowerLuminance / totalPowerLuminance;
@@ -110,6 +107,8 @@ NORI_NAMESPACE_BEGIN
 
                     // Calculate the flux of each photon asuming the light source is a sphere
                     Color3f flux = emitter->power() * M_PI * 4 / photon_count;
+
+                    
 
                     while(n_emitted++ < photon_count){
                         // cout << "\r" << "Photon Mapping Global: " << n_emitted << "/" << photon_count << std::endl;
@@ -119,12 +118,13 @@ NORI_NAMESPACE_BEGIN
 
                         /* sample a point on the light source */
                         EmitterQueryRecord emitterRecord;
-                        mesh->samplePosition(sampler->next2D(), emitterRecord.p, emitterRecord.n, emitterRecord.uv);
+                        emitter->sample(emitterRecord, sampler->next2D(), 0.);
                         y0_p = emitterRecord.p;
                         y0_n = emitterRecord.n;
                         
                         x.p = y0_p;
-                        x.mesh = mesh;
+                        x.mesh = emitter->getMesh();
+
                         x.shFrame = Frame(y0_n);
 
                         /* photon tracing */
@@ -139,9 +139,9 @@ NORI_NAMESPACE_BEGIN
 
                         while(true){
 
-
                             bRec.wi = x.toLocal(wi);
-                            bsdf = x.mesh->getBSDF();
+
+                            bsdf = x.mesh->getBSDF(); // SI ES POINTLIGHT VA A REVENTAR. Hay que ver como gestionamos esto
 
                             if(sampledFromEmitter){
                                 bsdf->sample(bRec, sampler->next2D());
@@ -149,7 +149,6 @@ NORI_NAMESPACE_BEGIN
                             }else {
                                 throughput *= bsdf->sample(bRec, sampler->next2D());
                             }
-
 
                             if (!scene->rayIntersect(Ray3f(x.p, -(wi = -x.toWorld(bRec.wo))), y)) {
                                 break;
@@ -182,8 +181,7 @@ NORI_NAMESPACE_BEGIN
                 /*
                  * build the CAUSTIC PHOTON MAP
                  */
-                for(Mesh *mesh:m_light_src){
-                    Emitter *emitter = mesh->getEmitter();
+                for(Emitter *emitter:lights){
                     float emitterPowerLuminance = 0.2126f * emitter->power().r() + 0.7152f * emitter->power().g() + 0.0722f * emitter->power().b();
                     int caustic_photon_count = caustic_max_photon_count * emitterPowerLuminance / totalPowerLuminance;
                     int n_emitted = 0;
@@ -199,6 +197,7 @@ NORI_NAMESPACE_BEGIN
                         Normal3f y0_n;
 
                         EmitterQueryRecord emitterRecord;
+
                         mesh->samplePosition(sampler->next2D(), emitterRecord.p, emitterRecord.n, emitterRecord.uv);
                         y0_p = emitterRecord.p;
                         y0_n = emitterRecord.n;
@@ -323,7 +322,7 @@ NORI_NAMESPACE_BEGIN
             for(Emitter *emitter:scene->getLights()){
                 Point3f y_p; Normal3f y_n;
                 EmitterQueryRecord emitterRecord;
-                mesh->getEmitter()->sample(emitterRecord, sampler->next2D(), 0.);
+                emitter->sample(emitterRecord, sampler->next2D(), 0.);
 
                 /* G(x<->y) */
                 x_wo = y_p - x.p;
@@ -341,8 +340,8 @@ NORI_NAMESPACE_BEGIN
                     /* L_direct = Le * brdf(x, wi, wo) * G(x<->y)  */
                     x_bRec.wo = x.toLocal(x_wo);
 
-                    rad +=  throughput * mesh->getEmitter()->power() * x_BSDF->eval(x_bRec) * G
-                            / mesh->getEmitter()->pdf(emitterRecord);
+                    rad +=  throughput * emitter->power() * x_BSDF->eval(x_bRec) * G
+                            / emitter->pdf(emitterRecord);
                 }
             }
 
