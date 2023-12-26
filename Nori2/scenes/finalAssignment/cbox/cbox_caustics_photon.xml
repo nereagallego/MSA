@@ -48,11 +48,11 @@
 		<bsdf type="mirror"/>
 	</mesh> -->
 
-	<!-- <mesh type="obj">
+	<mesh type="obj">
 		<string name="filename" value="meshes/sphere2.obj"/>
 
-		<bsdf type="dielectric"/>
-	</mesh> -->
+		<bsdf type="diffuse"/>
+	</mesh>
 
 	<mesh type="obj">
 		<string name="filename" value="meshes/light.obj"/>
