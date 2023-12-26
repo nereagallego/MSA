@@ -127,6 +127,16 @@ public:
 	// 	return area;
 	// }
 
+	virtual Point3f samplePosition(const Point2f& sample) const {
+		if (!m_mesh)
+			throw NoriException("There is no shape attached to this Area light!");
+		Point3f p;
+		Normal3f n; 
+		Point2f uv;
+		m_mesh->samplePosition(sample, p, n, uv);
+		return p;
+	}
+
 protected:
 	Texture* m_radiance;
 	float m_scale;

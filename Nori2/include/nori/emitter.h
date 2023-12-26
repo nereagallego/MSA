@@ -165,6 +165,8 @@ public:
 
 	bool isDelta() const { return m_type == EmitterType::EMITTER_POINT; }
 
+    virtual Point3f samplePosition(const Point2f& sample) const {}
+
 
 protected:
     /// Pointer to the mesh if the emitter is attached to a mesh

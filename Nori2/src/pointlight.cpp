@@ -58,6 +58,10 @@ public:
 	// 	return 0.;
 	// }
 
+	virtual Point3f samplePosition(const Point2f& sample) const {
+		return m_position;
+	}
+
 protected:
 	Point3f m_position;
 	Color3f m_radiance;
