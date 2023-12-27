@@ -42,16 +42,16 @@
 		</bsdf>
 	</mesh>
 
-	<!-- <mesh type="obj">
+	<mesh type="obj">
 		<string name="filename" value="meshes/sphere1.obj"/>
 
 		<bsdf type="mirror"/>
-	</mesh> -->
+	</mesh>
 
 	<mesh type="obj">
 		<string name="filename" value="meshes/sphere2.obj"/>
 
-		<bsdf type="diffuse"/>
+		<bsdf type="dielectric"/>
 	</mesh>
 
 	<mesh type="obj">

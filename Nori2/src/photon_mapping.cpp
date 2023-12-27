@@ -180,7 +180,81 @@ public:
                 }
                 n_emitted++;
             }
-        }       
+        }
+
+        // Caustic Photon Map
+        for (Emitter* emitter: scene->getLights()){
+            float emitterPowerLuminance = emitter->power().getLuminance();
+
+            int caustic_photon_count = caustic_max_photon_count * emitterPowerLuminance / totalPowerLuminance;
+            int n_emitted = 0;
+            float p_absorb = 0.1f;
+
+            Color3f flux = emitter->power() * 4 * M_PI/ caustic_photon_count;
+
+            while(n_emitted < caustic_photon_count){
+                // Generate a ray from the emitter
+
+                // Generate a ray from the emitter
+                Point3f p = emitter->samplePosition(sampler->next2D());
+                Vector3f d = emitter->sampleDirection(p, sampler.get());
+                
+                // cout << "emitterRecord.ref = " << emitterRecord.ref << endl;
+                Ray3f ray(p,d);
+                Color3f throughput = Color3f(1.0f);
+                const BSDF *bsdf = nullptr;
+
+                bool hasNonDiffuseInteraction = false;
+
+                while (true) {
+                    Intersection its;
+                    if(!scene->rayIntersect(ray, its)){
+                        // cout<<"No intersection"<<endl;
+                        break;
+                    }
+
+                    BSDFQueryRecord bsdfRecord(its.toLocal(-ray.d), its.uv);
+                    bsdf = its.mesh->getBSDF();
+                    bsdf->sample(bsdfRecord, sampler->next2D());
+
+                    if(its.mesh->getBSDF()->isDiffuse()) {
+                        if (hasNonDiffuseInteraction) {
+                            // BSDFQueryRecord bsdfRecord(its.toLocal(-ray.d), its.uv);
+                            Color3f color = its.mesh->getBSDF()->sample(bsdfRecord, sampler->next2D());
+                            PointCloud::Point photon;
+                            photon.x = its.p.x();
+                            photon.y = its.p.y();
+                            photon.z = its.p.z();
+                            photon.wi = ray.d;
+                            // cout << "flux: " << flux.r() << " " << flux.g() << " " << flux.b() << endl;
+                            // cout << "throughput: " << throughput.r() << " " << throughput.g() << " " << throughput.b() << endl;
+                            photon.power = flux * throughput;
+                            // cout << "photon power: " << photon.power.r() << " " << photon.power.g() << " " << photon.power.b() << endl;
+                            throughput *= color;
+                            caustic_cloud.pts.push_back(photon);
+                        } else {
+                            hasNonDiffuseInteraction = true;
+                        }
+                    }
+
+                    if(sampler->next1D() < p_absorb){
+                        // cout << "Photon absorbed" << endl;
+                        // cout << "n_emitted" << n_emitted << endl;
+                        break;
+                    }
+
+                    // Next ray
+                  
+                    Ray3f nextRay = Ray3f(its.p, its.toWorld(bsdfRecord.wo), Epsilon, INFINITY);
+                    // cout << "BSDF record: wi = " << bsdfRecord.wi.transpose() << ", wo = " << bsdfRecord.wo.transpose() << ", uv = " << bsdfRecord.uv.transpose() << endl;
+                    // cout << "fucking wo= " << bsdfRecord.wo.transpose() << endl;
+                    ray = nextRay;
+                    // cout << "asignación " << ray.d.transpose() << endl;
+                    // cout << "Next ray" << endl;
+                }
+                n_emitted++;
+            }
+        }
         
         cout<<"cloud's size "<<cloud.pts.size()<<endl;
         cout<<"caustic cloud's size "<<caustic_cloud.pts.size()<<endl;
@@ -210,6 +284,7 @@ public:
         }
         Color3f Lo(0.0f);
         Color3f Li(0.0f);
+        Color3f Lo_c(0.0f);
 
         EmitterQueryRecord emitterRecord(its.p);
 
@@ -226,7 +301,37 @@ public:
             }
         }
 
-        Lo = estimateIrradiance(its, ray.d, EPhotonMap::EGlobalPhotonMap, sampler);
+        if(its.mesh->getBSDF()->isDiffuse()) {
+            Lo = estimateIrradiance(its, ray.d, EPhotonMap::EGlobalPhotonMap, sampler);
+            Lo_c = estimateIrradiance(its, ray.d, EPhotonMap::ECausticPhotonMap, sampler);
+        } else {
+            bool diffuse = false;
+            Ray3f nextRay = ray;
+            while (!diffuse)
+            {
+                
+                BSDFQueryRecord x_bRec = BSDFQueryRecord(its.toLocal(-nextRay.d), its.uv);
+                const BSDF *x_BSDF = its.mesh->getBSDF();
+                Color3f c = x_BSDF->sample(x_bRec, sampler->next2D());
+                nextRay = Ray3f(its.p, its.toWorld(x_bRec.wo), Epsilon, INFINITY);
+                if(!scene->rayIntersect(nextRay, its)){
+                    break;
+                }
+                if(its.mesh->getBSDF()->isDiffuse()) {
+                    diffuse = true;
+                }
+            }
+            if(diffuse) {
+                Lo = estimateIrradiance(its, nextRay.d, EPhotonMap::EGlobalPhotonMap, sampler);
+                Lo_c = estimateIrradiance(its, nextRay.d, EPhotonMap::ECausticPhotonMap, sampler);
+            }
+            
+            
+            
+        }
+
+        // Lo = estimateIrradiance(its, ray.d, EPhotonMap::EGlobalPhotonMap, sampler);
+        // Lo_c = estimateIrradiance(its, ray.d, EPhotonMap::ECausticPhotonMap, sampler);
         // if Lo is not black, print a message
         // if(Lo.r() > 0 || Lo.g() > 0 || Lo.b() > 0) {
         //     cout << "Lo: " << Lo.r() << " " << Lo.g() << " " << Lo.b() << endl;
@@ -240,7 +345,7 @@ public:
 
         // print final result
         // cout << "Lo: " << Lo.r() << " " << Lo.g() << " " << Lo.b() << endl;
-        return  Lo;
+        return  Lo + Lo_c;
     }
 
     Color3f estimateIrradiance(Intersection its, Vector3f wi, EPhotonMap map, Sampler *sampler) const {
