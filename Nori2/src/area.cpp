@@ -83,8 +83,9 @@ public:
 		if (!m_mesh)
 			throw NoriException("There is no shape attached to this Area light!");
 		
-		return m_radiance->eval(Point2f(0,0)) ;
-		// // return m_radiance->eval(Point2f(0,0)) * (1./m_mesh->pdf(Point3f(0,0,0)));
+		// return m_radiance->eval(Point2f(0,0)) ;
+		return m_radiance->eval(Point2f(0,0)) / m_mesh->pdf(Point3f(0,0,0));
+		// return m_radiance->eval(Point2f(0,0)) * m_mesh->pdf(Point3f(0,0,0));
 	}
 
 

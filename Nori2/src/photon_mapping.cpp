@@ -79,40 +79,42 @@ public:
         std::unique_ptr<Sampler> sampler(scene->getSampler()->clone());
 
         Color3f totalPower = Color3f(0.0f);
+        float totalPowerLuminance = 0.0f;
 
         for(Emitter *emitter : scene->getLights()){
-            totalPower += emitter->power();
+            totalPowerLuminance += emitter->power().getLuminance();
         }
 
-        float totalPowerLuminance = 0.2126f * totalPower.r() + 0.7152f * totalPower.g() + 0.0722f * totalPower.b();
+        // float totalPowerLuminance = 0.27f * totalPower.r() + 0.67f * totalPower.g() + 0.06f * totalPower.b();
         
 
         // Global Photon Map
         for (Emitter* emitter: scene->getLights()){
-            float emitterPowerLuminance = 0.2126f * emitter->power().r() + 0.7152f * emitter->power().g() + 0.0722f * emitter->power().b();
+            float emitterPowerLuminance = emitter->power().getLuminance();
 
             int photon_count = max_photon_count * emitterPowerLuminance / totalPowerLuminance;
             int n_emitted = 0;
             float p_absorb = 0.1f;
 
-            cout << "power " << emitter->power() << endl;
-            Color3f flux = emitter->power() * 4 * M_PI / photon_count;
+            cout << "luminance " << emitter->power().getLuminance() << endl;
+            Color3f flux = emitter->power() * 4 * M_PI/ photon_count;
 
             while(n_emitted < photon_count){
                 // Generate a ray from the emitter
-                EmitterQueryRecord emitterRecord;
-                emitterRecord.ref = emitter->samplePosition(sampler->next2D());
-                Color3f Li = emitter->sample(emitterRecord, sampler->next2D(), 0.);
+                Point3f p = emitter->samplePosition(sampler->next2D());
+                Vector3f d = emitter->sampleDirection(p, sampler.get());
                 
                 // cout << "emitterRecord.ref = " << emitterRecord.ref << endl;
-                Ray3f ray(emitterRecord.ref, emitterRecord.wi);
+                Ray3f ray(p,d);
                 Color3f throughput = Color3f(1.0f);
                 const BSDF *bsdf = nullptr;
 
                 BSDFQueryRecord bsdfRecord(Vector3f(0.f));
                 bsdfRecord.measure = ESolidAngle;
-                bool first = true;
+                bool first = false;
                 // cout << "Soy tontito y estoy fuera" << endl;
+
+
 
                 while (true) {
 
@@ -193,11 +195,11 @@ public:
             : index(3 /*dim*/, cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */)),
                 caustic_index(3 /*dim*/, caustic_cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */)){
 
-        max_photon_count = props.getInteger("photon_count", 10000);
-        rad_estimation_count = props.getInteger("rad_estimation_count", 100);
+        max_photon_count = props.getInteger("photon_count", 100000);
+        rad_estimation_count = props.getInteger("rad_estimation_count", 10000);
         rad_estimation_radius = props.getFloat("rad_estimation_radius", 0.1);
-        caustic_max_photon_count = props.getInteger("caustic_photon_count", 100);
-        caustic_rad_estimation_count = props.getInteger("caustic_rad_estimation_count", 10000);
+        caustic_max_photon_count = props.getInteger("caustic_photon_count", 10000);
+        caustic_rad_estimation_count = props.getInteger("caustic_rad_estimation_count", 100000);
     }
 
     Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const {
@@ -238,7 +240,7 @@ public:
 
         // print final result
         // cout << "Lo: " << Lo.r() << " " << Lo.g() << " " << Lo.b() << endl;
-        return Li+ Lo;
+        return  Lo;
     }
 
     Color3f estimateIrradiance(Intersection its, Vector3f wi, EPhotonMap map, Sampler *sampler) const {

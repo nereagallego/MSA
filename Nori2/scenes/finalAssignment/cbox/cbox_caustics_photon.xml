@@ -58,7 +58,12 @@
 		<string name="filename" value="meshes/light.obj"/>
 
 		<emitter type="area">
-			<color name="radiance" value="40 40 40"/>
+			<color name="radiance" value="80 80 80"/>
 		</emitter>
 	</mesh>
+
+	<!-- <emitter type="pointlight">
+		<color name="radiance" value="12, 12, 12"/>
+		<point name="position" value="0, 1, 0"/>
+	</emitter> -->
 </scene>

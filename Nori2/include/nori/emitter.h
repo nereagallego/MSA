@@ -23,6 +23,7 @@
 #pragma once
 
 #include <nori/object.h>
+#include <nori/sampler.h>
 
 NORI_NAMESPACE_BEGIN
 
@@ -166,6 +167,18 @@ public:
 	bool isDelta() const { return m_type == EmitterType::EMITTER_POINT; }
 
     virtual Point3f samplePosition(const Point2f& sample) const {}
+
+    Vector3f sampleDirection(const Point3f &p, Sampler *sampler) const {
+        // Sample a random direction in the hemisphere above the point
+        float u1 = sampler->next1D();
+        float u2 = sampler->next1D();
+        float z = 1.0f - 2.0f * u1;
+        float r = std::sqrt(std::max(0.0f, 1.0f - z*z));
+        float phi = 2 * M_PI * u2;
+        float x = r * std::cos(phi);
+        float y = r * std::sin(phi);
+        return Vector3f(x, y, z);
+    }
 
 
 protected:
