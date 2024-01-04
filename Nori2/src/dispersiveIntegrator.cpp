@@ -3,6 +3,7 @@
 #include <nori/bsdf.h>
 #include <nori/sampler.h>
 #include <nori/emitter.h>
+#include <nori/common.h>
 
 #include <nori/nanoflann.hpp>
 #include <ctime>
@@ -74,6 +75,53 @@ public:
 
     PointCloud cloud, caustic_cloud;
     my_kd_tree_t  index, caustic_index; //(3 /*dim*/, cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */) );
+
+    Color3f wavelengthToRGB(double wavelength) {
+        double gamma = 0.8;
+        int intensityMax = 255;
+        double factor = 0.0;
+        int R = 0, G = 0, B = 0;
+
+        if (wavelength >= 380 && wavelength < 440) {
+            R = static_cast<int>((-(wavelength - 440) / (440 - 380)));
+            G = 0;
+            B = static_cast<int>(1.0);
+        } else if (wavelength >= 440 && wavelength < 490) {
+            R = 0;
+            G = static_cast<int>((wavelength - 440) / (490 - 440));
+            B = static_cast<int>(1.0);
+        } else if (wavelength >= 490 && wavelength < 510) {
+            R = 0;
+            G = static_cast<int>(1.0);
+            B = static_cast<int>(-(wavelength - 510) / (510 - 490));
+        } else if (wavelength >= 510 && wavelength < 580) {
+            R = static_cast<int>((wavelength - 510) / (580 - 510));
+            G = static_cast<int>(1.0);
+            B = 0;
+        } else if (wavelength >= 580 && wavelength < 645) {
+            R = static_cast<int>(1.0);
+            G = static_cast<int>(-(wavelength - 645) / (645 - 580));
+            B = 0;
+        } else if (wavelength >= 645 && wavelength <= 750) {
+            R = static_cast<int>(1.0);
+            G = 0;
+            B = 0;
+        }
+
+        // Adjust intensity
+        if (wavelength >= 380 && wavelength <= 645) {
+            factor = 0.3 + 0.7 * (wavelength - 380) / (645 - 380);
+        } else {
+            factor = 1.0;
+        }
+
+        // Adjust gamma
+        R = static_cast<int>(std::pow(intensityMax * (R * factor), gamma));
+        G = static_cast<int>(std::pow(intensityMax * (G * factor), gamma));
+        B = static_cast<int>(std::pow(intensityMax * (B * factor), gamma));
+
+        return Color3f(R / 255.0f, G / 255.0f, B / 255.0f);
+    }
 
     void preprocess(const Scene *scene) {
         // Randomize Seed
@@ -231,8 +279,10 @@ public:
                         // Choose a random wavelength
                         int index = dis(gen);
                         float lambda = wavelength[index];
+                        // cout << "lambda = " << index << endl;
                         bsdfRecord.wavelength = lambda;
                         bsdf->sample(bsdfRecord, sampler->next2D());
+                        throughput = wavelengthToRGB(lambda);
                     }
                     
 
@@ -288,10 +338,10 @@ public:
             : index(3 /*dim*/, cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */)),
                 caustic_index(3 /*dim*/, caustic_cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */)){
 
-        max_photon_count = props.getInteger("photon_count", 10000);
-        rad_estimation_count = props.getInteger("rad_estimation_count", 1000);
+        max_photon_count = props.getInteger("photon_count", 100000);
+        rad_estimation_count = props.getInteger("rad_estimation_count", 10000);
         rad_estimation_radius = props.getFloat("rad_estimation_radius", 0.1);
-        caustic_max_photon_count = props.getInteger("caustic_photon_count", 1000);
+        caustic_max_photon_count = props.getInteger("caustic_photon_count", 100000);
         caustic_rad_estimation_count = props.getInteger("caustic_rad_estimation_count", 10000);
     }
 

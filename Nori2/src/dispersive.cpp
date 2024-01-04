@@ -69,20 +69,11 @@ public:
 private:
 
     double calculateRefractiveIndex(double wavelength) const {
-        // Sellmeier coefficients for a hypothetical material
-        // Sellmeier coefficients for BK7 glass
-        double A = 1.03961212;
-        double B = 0.00600069867;
-        double C = 0.231792344;
-        double D = 0.0200179144;
-        double E = 1.01046945;
-        double F = 103.560653;
 
-        // Sellmeier equation
-        double refractiveIndex = sqrt(1 + A * pow(wavelength, 2) / (pow(wavelength, 2) - B) +
-                                            C * pow(wavelength, 2) / (pow(wavelength, 2) - D) +
-                                            E * pow(wavelength, 2) / (pow(wavelength, 2) - F));
-
+        double B1 = 4.658;
+        double C1 = 112.5;
+        double lambdaSquared = std::pow(wavelength, 2);
+        double refractiveIndex = std::sqrt(1 + (B1 * lambdaSquared) / (lambdaSquared - C1));
         return refractiveIndex;
     }
 

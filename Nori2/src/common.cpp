@@ -268,4 +268,6 @@ void coordinateSystem(const Vector3f &a, Vector3f &b, Vector3f &c) {
     b = c.cross(a);
 }
 
+
+
 NORI_NAMESPACE_END
