@@ -107,6 +107,8 @@ add_executable(nori
   src/path_nee.cpp
   src/path_mis.cpp
   src/photon_mapping.cpp
+  src/dispersive.cpp
+  src/dispersiveIntegrator.cpp
 )
 
 add_definitions(${NANOGUI_EXTRA_DEFS})

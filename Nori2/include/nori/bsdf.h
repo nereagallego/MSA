@@ -46,6 +46,8 @@ struct BSDFQueryRecord {
     /// Measure associated with the sample
     EMeasure measure;
 
+    double wavelength;
+
     /// Create a new record for sampling the BSDF
     BSDFQueryRecord(const Vector3f &wi, const Vector2f &uv = Vector2f() )
         : wi(wi), eta(1.f), uv(uv), measure(EUnknownMeasure) { }
@@ -117,6 +119,13 @@ public:
      * or not to store photons on a surface
      */
     virtual bool isDiffuse() const { return false; }
+
+    /**
+     * \brief Return whether or not this BRDF is dispersive. This
+     * is primarily used by photon mapping to decide whether
+     * or not to store photons on a surface
+     */
+    virtual bool isDispersive() const { return false; }
 };
 
 NORI_NAMESPACE_END
