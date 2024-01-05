@@ -84,6 +84,8 @@ public:
 			throw NoriException("There is no shape attached to this Area light!");
 		
 		// return m_radiance->eval(Point2f(0,0)) ;
+		// cout << "Radiance: " << m_radiance->eval(Point2f(0,0)) << endl;
+		// cout << "pdf: " << m_mesh->pdf(Point3f(0,0,0)) << endl;
 		return m_radiance->eval(Point2f(0,0)) / m_mesh->pdf(Point3f(0,0,0));
 		// return m_radiance->eval(Point2f(0,0)) * m_mesh->pdf(Point3f(0,0,0));
 	}

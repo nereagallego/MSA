@@ -46,9 +46,12 @@ void Mesh::activate() {
 
     // asign probability of sampling each triangle 
     for(int i = 0; i < m_F.cols(); i++){
+        // cout << "area: " << surfaceArea(i) << endl;
         m_pdf.append(surfaceArea(i));
     }
+    // cout << "total area: " << m_pdf.getNormalization() << endl;
     m_pdf.normalize();
+    // cout << "normalized area: " << m_pdf.getNormalization() << endl;
 }
 
 float Mesh::surfaceArea(n_UINT index) const {
