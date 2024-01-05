@@ -15,14 +15,14 @@
 	</camera>
 
 	<sampler type="independent">
-		<integer name="sampleCount" value="5"/>
+		<integer name="sampleCount" value="32"/>
 	</sampler>
 
 	<mesh type="obj">
 		<string name="filename" value="meshes/walls.obj"/>
 
 		<bsdf type="diffuse">
-			<color name="albedo" value="0.35 0.30 0.28"/>
+			<color name="albedo" value="0.30 0.30 0.30"/>
 		</bsdf>
 	</mesh>
 
@@ -30,7 +30,7 @@
 		<string name="filename" value="meshes/rightwall.obj"/>
 
 		<bsdf type="diffuse">
-			<color name="albedo" value="0.35 0.30 0.28"/>
+			<color name="albedo" value="0.30 0.30 0.30"/>
 		</bsdf>
 	</mesh>
 
@@ -38,12 +38,12 @@
 		<string name="filename" value="meshes/leftwall.obj"/>
 
 		<bsdf type="diffuse">
-			<color name="albedo" value="0.35 0.30 0.28"/>
+			<color name="albedo" value="0.30 0.30 0.30"/>
 		</bsdf>
 	</mesh>
 
 	<mesh type="obj">
-		<string name="filename" value="meshes/diamonds2.obj"/>
+		<string name="filename" value="meshes/diamond3.obj"/>
 
 		<bsdf type="dispersive"/>
 	</mesh>
@@ -52,7 +52,7 @@
 		<string name="filename" value="meshes/light.obj"/>
 
 		<emitter type="area">
-			<color name="radiance" value="80 80 80"/>
+			<color name="radiance" value="2000 2000 2000"/>
 		</emitter>
 	</mesh>
 

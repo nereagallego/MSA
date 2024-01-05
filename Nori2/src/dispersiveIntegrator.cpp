@@ -102,24 +102,19 @@ public:
             R = static_cast<int>(1.0);
             G = static_cast<int>(-(wavelength - 645) / (645 - 580));
             B = 0;
-        } else if (wavelength >= 645 && wavelength <= 750) {
+        } else if (wavelength >= 645 && wavelength < 750) {
             R = static_cast<int>(1.0);
             G = 0;
             B = 0;
         }
 
         // Adjust intensity
-        // if (wavelength >= 380 && wavelength <= 645) {
-        //     factor = 0.3 + 0.7 * (wavelength - 380) / (645 - 380);
-        // } else {
-        //     factor = 1.0;
-        // }
         factor = 1.0;
 
         // Adjust gamma
-        R = static_cast<int>(intensityMax * (R * factor));
-        G = static_cast<int>(intensityMax * (G * factor));
-        B = static_cast<int>(intensityMax * (B * factor));
+        R = static_cast<int>(intensityMax * pow((R * factor), gamma));
+        G = static_cast<int>(intensityMax * pow((G * factor), gamma));
+        B = static_cast<int>(intensityMax * pow((B * factor), gamma));
 
         return Color3f(R / 255.0f, G / 255.0f, B / 255.0f);
     }
@@ -132,7 +127,8 @@ public:
 
         std::random_device rd;  // Will be used to obtain a seed for the random number engine
         std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-        std::uniform_int_distribution<> dis(0, 16);
+        std::uniform_int_distribution<> dis(0, 15);
+        std::uniform_int_distribution<> dis3(0, 2);
 
         std::unique_ptr<Sampler> sampler(scene->getSampler()->clone());
 
@@ -144,6 +140,9 @@ public:
         }
 
         // float totalPowerLuminance = 0.27f * totalPower.r() + 0.67f * totalPower.g() + 0.06f * totalPower.b();
+
+        // count number of times each wavelength is chosen
+        int wavelengthCount[16] = {0};
         
 
         // Global Photon Map
@@ -270,43 +269,61 @@ public:
                     // cout<<"No intersection"<<endl;
                     continue;
                 }
-
-                BSDFQueryRecord bsdfRecord(its.toLocal(-ray.d), its.uv);
                 bsdf = its.mesh->getBSDF();
                 if(bsdf->isDiffuse()) {
                     continue; 
                 }
                 bool causticFound = true;
                 while(!bsdf->isDiffuse()){
+                    if(!scene->rayIntersect(ray, its)){
+                        causticFound = false;
+                        break;
+                    }
+                    BSDFQueryRecord bsdfRecord(its.toLocal(-ray.d), its.uv);
+                    bsdf = its.mesh->getBSDF();
+                    if(bsdf->isDiffuse()) {
+                        break; 
+                    }
                     if(!its.mesh->getBSDF()->isDispersive()) {
                             
                         bsdf->sample(bsdfRecord, sampler->next2D());
                     } else {
                         // Choose a random wavelength
                         int index = dis(gen);
+                        // cout << "index = " << index << endl;
                         float lambda = wavelength[index];
-                        // cout << "lambda = " << index << endl;
+                        // wavelengthCount[index]++;
+
+                        // // cout << "lambda = " << index << endl;
                         bsdfRecord.wavelength = lambda;
                         bsdf->sample(bsdfRecord, sampler->next2D());
                         Color3f c = wavelengthToRGB(lambda);
+                        // Color3f c;
+                        // if (index == 0) {
+                        //     c = Color3f(1.0f, 0.0f, 0.0f);
+                        // } else if (index == 1) {
+                        //     c = Color3f(0.0f, 1.0f, 0.0f);
+                        // } else if (index == 2) {
+                        //     c = Color3f(0.0f, 0.0f, 1.0f);
+                        // } else {
+                        //     cout << "Error" << endl;
+                        // }
                         throughput = c;
 
                         // cout << "c = " << c.r() << " " << c.g() << " " << c.b() << endl;
                     }
-                    // bsdf->sample(bsdfRecord, sampler->next2D());
-                    Ray3f nextRay = Ray3f(its.p, its.toWorld(bsdfRecord.wo), Epsilon, INFINITY);
-                    ray = nextRay;
-                    if(!scene->rayIntersect(ray, its)){
-                        causticFound = false;
-                        break;
-                    }
-                    bsdf = its.mesh->getBSDF();
-
                     if(sampler->next1D() < p_absorb){
                         // cout << "Photon absorbed" << endl;
                         // cout << "n_emitted" << n_emitted << endl;
+                        causticFound = false;
                         break;
                     }
+                    // bsdf->sample(bsdfRecord, sampler->next2D());
+                    ray = Ray3f(its.p, its.toWorld(bsdfRecord.wo), Epsilon, INFINITY);
+                    
+                    
+
+                    
                 }          
                     
                 if(causticFound) {
@@ -320,8 +337,6 @@ public:
                     photon.power = flux * throughput;
                     // cout << "photon power: " << photon.power.r() << " " << photon.power.g() << " " << photon.power.b() << endl;
                     
-                
-                    throughput *= bsdf->sample(bsdfRecord, sampler->next2D());
                     caustic_cloud.pts.push_back(photon);
                     // cout << "Photon emitted" << endl;
                     
@@ -339,17 +354,22 @@ public:
         /* kd-tree */
         index.buildIndex();
         caustic_index.buildIndex();
+
+        // print percentage of each wavelength
+        // for(int i = 0; i < 16; i++) {
+        //     cout << "wavelength " << wavelength[i] << " nm: " << wavelengthCount[i] * 100 / max_photon_count << "%" << endl;
+        // }
     }
 
     DispersiveIntegrator(const PropertyList &props)
             : index(3 /*dim*/, cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */)),
                 caustic_index(3 /*dim*/, caustic_cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */)){
 
-        max_photon_count = props.getInteger("photon_count", 1000);
-        rad_estimation_count = props.getInteger("rad_estimation_count", 100);
-        rad_estimation_radius = props.getFloat("rad_estimation_radius", 0.05);
-        caustic_max_photon_count = props.getInteger("caustic_photon_count", 10000);
-        caustic_rad_estimation_count = props.getInteger("caustic_rad_estimation_count", 1000);
+        max_photon_count = props.getInteger("photon_count", 100000);
+        rad_estimation_count = props.getInteger("rad_estimation_count", 1000);
+        rad_estimation_radius = props.getFloat("rad_estimation_radius", 0.025);
+        caustic_max_photon_count = props.getInteger("caustic_photon_count", 1000000);
+        caustic_rad_estimation_count = props.getInteger("caustic_rad_estimation_count", 10000);
     }
 
     Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const {
@@ -359,7 +379,7 @@ public:
             return scene->getBackground(ray);
         }
         Color3f Lo(0.0f);
-        Color3f Li(0.0f);
+        Color3f Li_(0.0f);
         Color3f Lo_c(0.0f);
 
         EmitterQueryRecord emitterRecord(its.p);
@@ -373,7 +393,7 @@ public:
                 // cout << "Ligth intersection " << ray.toString() << endl;
                 float pdfPoint = em->pdf(emitterRecord);
                 float cosTheta = its.shFrame.n.dot(emitterRecord.wi);
-                Li += Li_light ;
+                Li_ += Li_light ;
             }
         }
 
@@ -385,11 +405,14 @@ public:
             Ray3f nextRay = ray;
             while (!diffuse)
             {
-                
                 BSDFQueryRecord x_bRec = BSDFQueryRecord(its.toLocal(-nextRay.d), its.uv);
                 const BSDF *x_BSDF = its.mesh->getBSDF();
+                
                 x_BSDF->sample(x_bRec, sampler->next2D());
                 nextRay = Ray3f(its.p, its.toWorld(x_bRec.wo), Epsilon, INFINITY);
+                
+                
+                
                 if(!scene->rayIntersect(nextRay, its)){
                     break;
                 }
@@ -401,8 +424,6 @@ public:
                 Lo = estimateIrradiance(its, nextRay.d, EPhotonMap::EGlobalPhotonMap, sampler);
                 Lo_c = estimateIrradiance(its, nextRay.d, EPhotonMap::ECausticPhotonMap, sampler);
             }
-            
-            
             
         }
         return  Lo + Lo_c;
