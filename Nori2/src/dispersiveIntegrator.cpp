@@ -381,7 +381,7 @@ public:
                 
                 BSDFQueryRecord x_bRec = BSDFQueryRecord(its.toLocal(-nextRay.d), its.uv);
                 const BSDF *x_BSDF = its.mesh->getBSDF();
-                Color3f c = x_BSDF->sample(x_bRec, sampler->next2D());
+                x_BSDF->sample(x_bRec, sampler->next2D());
                 nextRay = Ray3f(its.p, its.toWorld(x_bRec.wo), Epsilon, INFINITY);
                 if(!scene->rayIntersect(nextRay, its)){
                     break;
