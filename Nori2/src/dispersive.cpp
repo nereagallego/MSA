@@ -99,9 +99,13 @@ private:
         double lambdaSquared = std::pow(wavelength, 2);
 
         // DIAMOND
-        double B1 = 4.658;
-        double C1 = 112.5;
-        double refractiveIndex = std::sqrt(1 + (B1 * lambdaSquared) / (lambdaSquared - C1 * C1));
+        // double B1 = 4.658;
+        // double C1 = 112.5;
+        // double refractiveIndex = std::sqrt(1 + (B1 * lambdaSquared) / (lambdaSquared - C1 * C1));
+
+        // Regractive index from 2.4 to 3 for 380nm to 750nm
+        double refractiveIndex = 2.4 + (wavelength - 380) * (3 - 2.4) / (750 - 380);
+
 
         // BK7
 

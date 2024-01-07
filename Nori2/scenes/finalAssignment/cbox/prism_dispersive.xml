@@ -15,7 +15,7 @@
 	</camera>
 
 	<sampler type="independent">
-		<integer name="sampleCount" value="32"/>
+		<integer name="sampleCount" value="128"/>
 	</sampler>
 
 	<mesh type="obj">
@@ -48,15 +48,15 @@
 		<bsdf type="dispersive"/>
 	</mesh>
 
-	<!-- <mesh type="obj">
-		<string name="filename" value="meshes/light2.obj"/>
+	<mesh type="obj">
+		<string name="filename" value="meshes/light.obj"/>
 
 		<emitter type="area">
-			<color name="radiance" value="2000 2000 2000"/>
+			<color name="radiance" value="300000 300000 300000"/>
 		</emitter>
-	</mesh> -->
+	</mesh>
 
-	<mesh type="obj">
+	<!-- <mesh type="obj">
 		<string name="filename" value="meshes/light3.obj"/>
 
 		<emitter type="area">
@@ -70,7 +70,7 @@
 		<emitter type="area">
 			<color name="radiance" value="20 20 20"/>
 		</emitter>
-	</mesh>
+	</mesh> -->
 
     <!-- <mesh type="obj">
 		<string name="filename" value="meshes/light2.obj"/>

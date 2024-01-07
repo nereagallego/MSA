@@ -272,7 +272,6 @@ public:
                     continue; 
                 }
                 bool causticFound = true;
-                bool hasDispersiveIteraction = false;
                 while(!bsdf->isDiffuse()){
                     if(!scene->rayIntersect(ray, its)){
                         causticFound = false;
@@ -307,8 +306,7 @@ public:
                         // } else {
                         //     cout << "Error" << endl;
                         // }
-                        throughput = !hasDispersiveIteraction ? c : throughput ;
-                        hasDispersiveIteraction = true;
+                        throughput = c;
 
                         // cout << "c = " << c.r() << " " << c.g() << " " << c.b() << endl;
                     }
@@ -362,11 +360,12 @@ public:
             : index(3 /*dim*/, cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */)),
                 caustic_index(3 /*dim*/, caustic_cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */)){
 
-        max_photon_count = props.getInteger("photon_count", 10000);
-        rad_estimation_count = props.getInteger("rad_estimation_count", 1000);
-        rad_estimation_radius = props.getFloat("rad_estimation_radius", 0.0025);
-        caustic_max_photon_count = props.getInteger("caustic_photon_count", 100000);
-        caustic_rad_estimation_count = props.getInteger("caustic_rad_estimation_count", 1000);
+        max_photon_count = props.getInteger("photon_count", 10000000);
+        rad_estimation_count = props.getInteger("rad_estimation_count", 10000);
+        rad_estimation_radius = props.getFloat("rad_estimation_radius", 0.0015);
+        caustic_rad_estimation_radius = props.getFloat("caustic_rad_estimation_radius", 0.0015);
+        caustic_max_photon_count = props.getInteger("caustic_photon_count", 10000000);
+        caustic_rad_estimation_count = props.getInteger("caustic_rad_estimation_count", 10000);
     }
 
     Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const {
@@ -445,7 +444,7 @@ public:
         } else {
             estimateCount = caustic_rad_estimation_count;
             n_numPhotonShot = caustic_max_photon_count;
-            search_radius = rad_estimation_radius;
+            search_radius = caustic_rad_estimation_radius;
             m_index = &caustic_index;
             photons = &caustic_cloud;
         }
@@ -499,14 +498,14 @@ public:
                 rad_estimation_radius,
                 caustic_max_photon_count,
                 caustic_rad_estimation_count,
-                rad_estimation_radius
+                caustic_rad_estimation_radius
         );
     }
 
     private:
         int max_photon_count, caustic_max_photon_count;
         int rad_estimation_count, caustic_rad_estimation_count;
-        float rad_estimation_radius;
+        float rad_estimation_radius, caustic_rad_estimation_radius;
 
 
     };

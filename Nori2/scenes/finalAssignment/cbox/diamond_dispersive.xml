@@ -15,7 +15,7 @@
 	</camera>
 
 	<sampler type="independent">
-		<integer name="sampleCount" value="10"/>
+		<integer name="sampleCount" value="128"/>
 	</sampler>
 
 	<mesh type="obj">
@@ -52,7 +52,7 @@
 		<string name="filename" value="meshes/light.obj"/>
 
 		<emitter type="area">
-			<color name="radiance" value="2000 2000 2000"/>
+			<color name="radiance" value="300000 300000 300000"/>
 		</emitter>
 	</mesh>
 
