@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<scene>
+	<integrator type="dispersive_integrator"/>
+
+	<camera type="perspective">
+		<float name="fov" value="27.7856"/>
+		<transform name="toWorld">
+			<scale value="-1,1,1"/>
+			<lookat target="0, 0.893051, 4.41198" origin="0, 0.919769, 5.41159" up="0, 1, 0"/>
+		</transform>
+
+		<integer name="height" value="600"/>
+		<integer name="width" value="800"/>
+	</camera>
+
+	<sampler type="independent">
+		<integer name="sampleCount" value="32"/>
+	</sampler>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/walls.obj"/>
+
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.35 0.30 0.28"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/rightwall.obj"/>
+
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.35 0.30 0.28"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/leftwall.obj"/>
+
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.35 0.30 0.28"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/inclinated_plane.obj"/>
+
+		<bsdf type="dispersive"/>
+	</mesh>
+
+	<!-- <mesh type="obj">
+		<string name="filename" value="meshes/sphere2.obj"/>
+
+		<bsdf type="dielectric"/>
+	</mesh> -->
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/light.obj"/>
+
+		<emitter type="area">
+			<color name="radiance" value="80 80 80"/>
+		</emitter>
+	</mesh>
+
+	<!-- <emitter type="pointlight">
+		<color name="radiance" value="12, 12, 12"/>
+		<point name="position" value="0, 1, 0"/>
+	</emitter> -->
+</scene>
