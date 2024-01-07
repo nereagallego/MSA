@@ -104,7 +104,7 @@ private:
         // double refractiveIndex = std::sqrt(1 + (B1 * lambdaSquared) / (lambdaSquared - C1 * C1));
 
         // Regractive index from 2.4 to 3 for 380nm to 750nm
-        double refractiveIndex = 2.4 + (wavelength - 380) * (3 - 2.4) / (750 - 380);
+        double refractiveIndex = 2.4 + (wavelength - 380) * (4 - 2.4) / (750 - 380);
 
 
         // BK7

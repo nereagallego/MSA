@@ -272,6 +272,7 @@ public:
                     continue; 
                 }
                 bool causticFound = true;
+                bool hasDispersiveIteraction = false;
                 while(!bsdf->isDiffuse()){
                     if(!scene->rayIntersect(ray, its)){
                         causticFound = false;
@@ -295,7 +296,7 @@ public:
                         // // cout << "lambda = " << index << endl;
                         bsdfRecord.wavelength = lambda;
                         bsdf->sample(bsdfRecord, sampler->next2D());
-                        Color3f c = wavelengthToRGB(lambda);
+                        Color3f c =  wavelengthToRGB(lambda);
                         // Color3f c;
                         // if (index == 0) {
                         //     c = Color3f(1.0f, 0.0f, 0.0f);
@@ -306,7 +307,8 @@ public:
                         // } else {
                         //     cout << "Error" << endl;
                         // }
-                        throughput = c;
+                        throughput = !hasDispersiveIteraction ? c : throughput ;
+                        hasDispersiveIteraction = true;
 
                         // cout << "c = " << c.r() << " " << c.g() << " " << c.b() << endl;
                     }
