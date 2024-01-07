@@ -272,6 +272,7 @@ public:
                     continue; 
                 }
                 bool causticFound = true;
+                bool hasDispersiveIteraction = false;
                 while(!bsdf->isDiffuse()){
                     if(!scene->rayIntersect(ray, its)){
                         causticFound = false;
@@ -306,7 +307,8 @@ public:
                         // } else {
                         //     cout << "Error" << endl;
                         // }
-                        throughput = c;
+                        throughput = !hasDispersiveIteraction ? c : throughput ;
+                        hasDispersiveIteraction = true;
 
                         // cout << "c = " << c.r() << " " << c.g() << " " << c.b() << endl;
                     }
@@ -362,9 +364,9 @@ public:
 
         max_photon_count = props.getInteger("photon_count", 1);
         rad_estimation_count = props.getInteger("rad_estimation_count", 1);
-        rad_estimation_radius = props.getFloat("rad_estimation_radius", 0.001);
-        caustic_max_photon_count = props.getInteger("caustic_photon_count", 1000000);
-        caustic_rad_estimation_count = props.getInteger("caustic_rad_estimation_count", 10000);
+        rad_estimation_radius = props.getFloat("rad_estimation_radius", 0.0025);
+        caustic_max_photon_count = props.getInteger("caustic_photon_count", 100000);
+        caustic_rad_estimation_count = props.getInteger("caustic_rad_estimation_count", 1000);
     }
 
     Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const {
