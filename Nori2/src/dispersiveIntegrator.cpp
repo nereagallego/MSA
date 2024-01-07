@@ -261,8 +261,6 @@ public:
                 Color3f throughput = Color3f(1.0f);
                 const BSDF *bsdf = nullptr;
 
-                bool hasNonDiffuseInteraction = false;
-
                 
                 Intersection its;
                 if(!scene->rayIntersect(ray, its)){
@@ -321,9 +319,6 @@ public:
                     // bsdf->sample(bsdfRecord, sampler->next2D());
                     ray = Ray3f(its.p, its.toWorld(bsdfRecord.wo), Epsilon, INFINITY);
                     
-                    
-
-                    
                 }          
                     
                 if(causticFound) {
@@ -365,9 +360,9 @@ public:
             : index(3 /*dim*/, cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */)),
                 caustic_index(3 /*dim*/, caustic_cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */)){
 
-        max_photon_count = props.getInteger("photon_count", 100000);
-        rad_estimation_count = props.getInteger("rad_estimation_count", 1000);
-        rad_estimation_radius = props.getFloat("rad_estimation_radius", 0.025);
+        max_photon_count = props.getInteger("photon_count", 1);
+        rad_estimation_count = props.getInteger("rad_estimation_count", 1);
+        rad_estimation_radius = props.getFloat("rad_estimation_radius", 0.001);
         caustic_max_photon_count = props.getInteger("caustic_photon_count", 1000000);
         caustic_rad_estimation_count = props.getInteger("caustic_rad_estimation_count", 10000);
     }

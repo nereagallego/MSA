@@ -9,8 +9,8 @@ class Dispersive : public BSDF {
 public:
     Dispersive(const PropertyList &propList) {
         /* Interior IOR (default: BK7 borosilicate optical glass) */
-        // m_intIOR = propList.getFloat("intIOR", 2.4f);
-        m_intIOR = propList.getFloat("intIOR", 1.5046f);
+        m_intIOR = propList.getFloat("intIOR", 2.4f);
+        // m_intIOR = propList.getFloat("intIOR", 1.5046f);
 
         /* Exterior IOR (default: air) */
         m_extIOR = propList.getFloat("extIOR", 1.000277f);
@@ -96,17 +96,16 @@ public:
 private:
 
     double calculateRefractiveIndex(double wavelength) const {
+        double lambdaSquared = std::pow(wavelength, 2);
 
         // DIAMOND
-        double lambdaSquared = std::pow(wavelength, 2);
         double B1 = 4.658;
         double C1 = 112.5;
         double refractiveIndex = std::sqrt(1 + (B1 * lambdaSquared) / (lambdaSquared - C1 * C1));
 
         // BK7
-        // double lambdaSquared = std::pow(wavelength, 2);
 
-        // // Constants for BK7 glass
+        // Constants for BK7 glass
         // double B1 = 1.03961212;
         // double B2 = 0.00600069867;
         // double B3 = 0.231792344;
