@@ -168,9 +168,6 @@ public:
 
                 BSDFQueryRecord bsdfRecord(Vector3f(0.f));
                 bsdfRecord.measure = ESolidAngle;
-                bool first = false;
-                // cout << "Soy tontito y estoy fuera" << endl;
-
 
 
                 while (true) {
@@ -187,7 +184,7 @@ public:
                     bsdfRecord.uv = its.uv;
                     // BSDFQueryRecord bsdfRecord(its.toLocal(-ray.d), its.uv);
                     Color3f color = its.mesh->getBSDF()->sample(bsdfRecord, sampler->next2D());
-                    if(its.mesh->getBSDF()->isDiffuse() && !first) {
+                    if(its.mesh->getBSDF()->isDiffuse()) {
                         PointCloud::Point photon;
                         photon.x = its.p.x();
                         photon.y = its.p.y();
@@ -202,22 +199,7 @@ public:
                         throughput *= color;
                         cloud.pts.push_back(photon);
                         // cout << "Photon emitted" << endl;
-                    } else if(its.mesh->getBSDF()->isDiffuse()) {
-                        first = false;
-                        PointCloud::Point photon;
-                        photon.x = its.p.x();
-                        photon.y = its.p.y();
-                        photon.z = its.p.z();
-                        photon.wi = ray.d;
-                        // cout << "flux: " << flux.r() << " " << flux.g() << " " << flux.b() << endl;
-                        // cout << "throughput: " << throughput.r() << " " << throughput.g() << " " << throughput.b() << endl;
-                        photon.power = flux * throughput;
-                        // cout << "photon power: " << photon.power.r() << " " << photon.power.g() << " " << photon.power.b() << endl;
-                       
-                    
-                        throughput *= color;
-                        // cloud.pts.push_back(photon);
-                    }
+                    } 
 
                     if(sampler->next1D() < p_absorb){
                         // cout << "Photon absorbed" << endl;
@@ -379,21 +361,6 @@ public:
         Color3f Lo(0.0f);
         Color3f Li_(0.0f);
         Color3f Lo_c(0.0f);
-
-        EmitterQueryRecord emitterRecord(its.p);
-
-        const std::vector<Emitter *> lights = scene->getLights();
-        for(Emitter* em : lights){
-            Color3f Li_light = em->sample(emitterRecord, sampler->next2D(), 0.);
-            Ray3f shadowRay(its.p, emitterRecord.wi);
-            Intersection shadowIts;
-            if (!scene->rayIntersect(shadowRay, shadowIts) && (shadowIts.t - Epsilon) >= (emitterRecord.dist )){
-                // cout << "Ligth intersection " << ray.toString() << endl;
-                float pdfPoint = em->pdf(emitterRecord);
-                float cosTheta = its.shFrame.n.dot(emitterRecord.wi);
-                Li_ += Li_light ;
-            }
-        }
 
         if(its.mesh->getBSDF()->isDiffuse()) {
             Lo = estimateIrradiance(its, ray.d, EPhotonMap::EGlobalPhotonMap, sampler);
