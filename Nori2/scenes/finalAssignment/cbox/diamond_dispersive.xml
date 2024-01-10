@@ -43,9 +43,9 @@
 	</mesh>
 
 	<mesh type="obj">
-		<string name="filename" value="meshes/diamond.obj"/>
+		<string name="filename" value="meshes/diamond3.obj"/>
 
-		<bsdf type="dielectric"/>
+		<bsdf type="dispersive"/>
 	</mesh>
 
 	<mesh type="obj">

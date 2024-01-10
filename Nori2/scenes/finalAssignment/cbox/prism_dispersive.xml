@@ -43,18 +43,23 @@
 	</mesh>
 
 	<mesh type="obj">
-		<string name="filename" value="meshes/prism2.obj"/>
+		<string name="filename" value="meshes/prism.obj"/>
 
 		<bsdf type="dispersive"/>
 	</mesh>
 
-	<mesh type="obj">
+	<!-- <mesh type="obj">
 		<string name="filename" value="meshes/light.obj"/>
 
 		<emitter type="area">
 			<color name="radiance" value="300000 300000 300000"/>
 		</emitter>
-	</mesh>
+	</mesh> -->
+
+	<emitter type="pointlight">
+		<color name="radiance" value="300000, 300000, 300000"/>
+		<point name="position" value="0, 1, 0"/>
+	</emitter>
 
 	<!-- <mesh type="obj">
 		<string name="filename" value="meshes/light3.obj"/>
