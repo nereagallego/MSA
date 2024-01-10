@@ -27,7 +27,8 @@ class Dielectric : public BSDF {
 public:
     Dielectric(const PropertyList &propList) {
         /* Interior IOR (default: BK7 borosilicate optical glass) */
-        m_intIOR = propList.getFloat("intIOR", 1.5046f);
+        // m_intIOR = propList.getFloat("intIOR", 1.5046f);
+        m_intIOR = propList.getFloat("intIOR", 2.4f);
 
         /* Exterior IOR (default: air) */
         m_extIOR = propList.getFloat("extIOR", 1.000277f);

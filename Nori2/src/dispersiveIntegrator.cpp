@@ -372,7 +372,11 @@ public:
             {
                 BSDFQueryRecord x_bRec = BSDFQueryRecord(its.toLocal(-nextRay.d), its.uv);
                 const BSDF *x_BSDF = its.mesh->getBSDF();
-                
+                if(x_BSDF->isDispersive()){
+                    int idx = round(sampler->next1D() * 15);
+                    float lambda = wavelength[idx];
+                    x_bRec.wavelength = lambda;
+                }
                 x_BSDF->sample(x_bRec, sampler->next2D());
                 nextRay = Ray3f(its.p, its.toWorld(x_bRec.wo), Epsilon, INFINITY);
                 

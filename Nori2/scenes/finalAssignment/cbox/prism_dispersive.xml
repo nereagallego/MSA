@@ -43,7 +43,7 @@
 	</mesh>
 
 	<mesh type="obj">
-		<string name="filename" value="meshes/prism.obj"/>
+		<string name="filename" value="meshes/prism2.obj"/>
 
 		<bsdf type="dispersive"/>
 	</mesh>
