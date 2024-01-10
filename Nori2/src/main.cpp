@@ -180,6 +180,7 @@ int main(int argc, char **argv) {
                 return -1;
             }
             threadCount = atoi(argv[i+1]);
+            cout << "Using " << threadCount << " threads." << endl;
             i++;
             if (threadCount <= 0) {
                 cerr << "\"--threads\" argument expects a positive integer following it." << endl;

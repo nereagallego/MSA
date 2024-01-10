@@ -204,55 +204,60 @@ public:
                 Color3f throughput = Color3f(1.0f);
                 const BSDF *bsdf = nullptr;
 
-                bool hasNonDiffuseInteraction = false;
-
-                while (true) {
-                    Intersection its;
+                
+                Intersection its;
+                if(!scene->rayIntersect(ray, its)){
+                    // cout<<"No intersection"<<endl;
+                    continue;
+                }
+                bsdf = its.mesh->getBSDF();
+                if(bsdf->isDiffuse()) {
+                    continue; 
+                }
+                bool causticFound = true;
+                while(!bsdf->isDiffuse()){
                     if(!scene->rayIntersect(ray, its)){
-                        // cout<<"No intersection"<<endl;
+                        causticFound = false;
                         break;
                     }
-
                     BSDFQueryRecord bsdfRecord(its.toLocal(-ray.d), its.uv);
                     bsdf = its.mesh->getBSDF();
-                    bsdf->sample(bsdfRecord, sampler->next2D());
-
-                    if(its.mesh->getBSDF()->isDiffuse()) {
-                        if (hasNonDiffuseInteraction) {
-                            // BSDFQueryRecord bsdfRecord(its.toLocal(-ray.d), its.uv);
-                            Color3f color = its.mesh->getBSDF()->sample(bsdfRecord, sampler->next2D());
-                            PointCloud::Point photon;
-                            photon.x = its.p.x();
-                            photon.y = its.p.y();
-                            photon.z = its.p.z();
-                            photon.wi = ray.d;
-                            // cout << "flux: " << flux.r() << " " << flux.g() << " " << flux.b() << endl;
-                            // cout << "throughput: " << throughput.r() << " " << throughput.g() << " " << throughput.b() << endl;
-                            photon.power = flux * throughput;
-                            // cout << "photon power: " << photon.power.r() << " " << photon.power.g() << " " << photon.power.b() << endl;
-                            throughput *= color;
-                            caustic_cloud.pts.push_back(photon);
-                        } else {
-                            hasNonDiffuseInteraction = true;
-                        }
+                    if(bsdf->isDiffuse()) {
+                        break; 
                     }
-
+                   
+                            
+                    bsdf->sample(bsdfRecord, sampler->next2D());
+                    
                     if(sampler->next1D() < p_absorb){
                         // cout << "Photon absorbed" << endl;
                         // cout << "n_emitted" << n_emitted << endl;
+                        causticFound = false;
                         break;
                     }
-
-                    // Next ray
-                  
-                    Ray3f nextRay = Ray3f(its.p, its.toWorld(bsdfRecord.wo), Epsilon, INFINITY);
-                    // cout << "BSDF record: wi = " << bsdfRecord.wi.transpose() << ", wo = " << bsdfRecord.wo.transpose() << ", uv = " << bsdfRecord.uv.transpose() << endl;
-                    // cout << "fucking wo= " << bsdfRecord.wo.transpose() << endl;
-                    ray = nextRay;
-                    // cout << "asignación " << ray.d.transpose() << endl;
-                    // cout << "Next ray" << endl;
+                    // bsdf->sample(bsdfRecord, sampler->next2D());
+                    ray = Ray3f(its.p, its.toWorld(bsdfRecord.wo), Epsilon, INFINITY);
+                    
+                }          
+                    
+                if(causticFound) {
+                    PointCloud::Point photon;
+                    photon.x = its.p.x();
+                    photon.y = its.p.y();
+                    photon.z = its.p.z();
+                    photon.wi = ray.d;
+                    // cout << "flux: " << flux.r() << " " << flux.g() << " " << flux.b() << endl;
+                    // cout << "throughput: " << throughput.r() << " " << throughput.g() << " " << throughput.b() << endl;
+                    photon.power = flux * throughput;
+                    // cout << "photon power: " << photon.power.r() << " " << photon.power.g() << " " << photon.power.b() << endl;
+                    
+                    caustic_cloud.pts.push_back(photon);
+                    // cout << "Photon emitted" << endl;
+                    
+                    n_emitted++;
+                    // cout << "n_emitted" << n_emitted  << "/" << caustic_photon_count << endl;
                 }
-                n_emitted++;
+                
             }
         }
         
@@ -269,11 +274,11 @@ public:
             : index(3 /*dim*/, cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */)),
                 caustic_index(3 /*dim*/, caustic_cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */)){
 
-        max_photon_count = props.getInteger("photon_count", 100000);
-        rad_estimation_count = props.getInteger("rad_estimation_count", 10000);
+        max_photon_count = props.getInteger("photon_count", 10000);
+        rad_estimation_count = props.getInteger("rad_estimation_count", 1000);
         rad_estimation_radius = props.getFloat("rad_estimation_radius", 0.1);
-        caustic_max_photon_count = props.getInteger("caustic_photon_count", 10000);
-        caustic_rad_estimation_count = props.getInteger("caustic_rad_estimation_count", 100000);
+        caustic_max_photon_count = props.getInteger("caustic_photon_count", 1000);
+        caustic_rad_estimation_count = props.getInteger("caustic_rad_estimation_count", 10000);
     }
 
     Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const {
