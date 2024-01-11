@@ -5,15 +5,14 @@
 		<integer name="sampleCount" value="32"/>
 	</sampler>
 	<camera type="perspective">
-		<float name="fov" value="19.939412225153244"/>
-		<float name="nearClip" value="0.10000000149011612"/>
-		<float name="farClip" value="100.0"/>
-		<integer name="width" value="800"/>
-		<integer name="height" value="600"/>
+		<float name="fov" value="27.7856"/>
 		<transform name="toWorld">
-			<scale value="1.000000 1.000000 -1.000000"/>
-			<matrix value="1.0,2.085012680764402e-15,-1.7484556735780643e-07,-0.01633080095052719,-1.7484555314695172e-07,1.1924882414859894e-08,-1.0000001192092896,-17.98656463623047,0.0,1.0000001192092896,1.1924882414859894e-08,0.3592751622200012,0.0,0.0,0.0,1.0"/>
+			<scale value="-1,1,1"/>
+			<lookat target="0, 0.893051, 4.41198" origin="0, 0.919769, 5.41159" up="0, 1, 0"/>
 		</transform>
+
+		<integer name="height" value="600"/>
+		<integer name="width" value="800"/>
 	</camera>
 
 	<mesh type="obj">
