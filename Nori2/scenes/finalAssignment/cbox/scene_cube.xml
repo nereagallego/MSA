@@ -46,11 +46,11 @@
 		</emitter>
 	</mesh>
 	<mesh type="obj">
-		<string name="filename" value="meshes/bigCube.obj"/>
+		<string name="filename" value="meshes/bigcube.obj"/>
 		<bsdf type="dielectric"/>
 	</mesh>
 	<mesh type="obj">
-		<string name="filename" value="meshes/smallCube.obj"/>
+		<string name="filename" value="meshes/smallcube.obj"/>
 		<bsdf type="dielectric"/>
 	</mesh>
 </scene>
