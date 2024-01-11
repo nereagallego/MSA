@@ -17,7 +17,7 @@
 	</camera>
 	<emitter type="pointlight">
 		<point name="position" value="-0.191462,-0.711530,1.645256"/>
-		<color name="radiance" value="10.000000,10.000000,10.000000"/>
+		<color name="radiance" value="300000,300000,300000"/>
 	</emitter>
 	<mesh type="obj">
 		<string name="filename" value="meshes/leftWall.obj"/>
