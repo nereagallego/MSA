@@ -139,12 +139,9 @@ public:
             totalPowerLuminance += emitter->power().getLuminance();
         }
 
-        // float totalPowerLuminance = 0.27f * totalPower.r() + 0.67f * totalPower.g() + 0.06f * totalPower.b();
-
         // count number of times each wavelength is chosen
         int wavelengthCount[16] = {0};
         
-
         // Global Photon Map
         for (Emitter* emitter: scene->getLights()){
             float emitterPowerLuminance = emitter->power().getLuminance();
@@ -161,7 +158,7 @@ public:
                 Point3f p = emitter->samplePosition(sampler->next2D());
                 Vector3f d = emitter->sampleDirection(p, sampler.get());
                 
-                // cout << "emitterRecord.ref = " << emitterRecord.ref << endl;
+
                 Ray3f ray(p,d);
                 Color3f throughput = Color3f(1.0f);
                 const BSDF *bsdf = nullptr;
@@ -173,16 +170,18 @@ public:
                 while (true) {
 
                     Intersection its;
-                    // cout << "Ray origin: " << ray.o.transpose() << ", direction: " << ray.d.transpose() << endl;
                     if(!scene->rayIntersect(ray, its)){
-                        // cout<<"No intersection"<<endl;
-                        // cout << "n_emitted" << n_emitted << endl;
+
                         break;
                     }
-                    // cout<<"intersection"<<endl;
+  
                     bsdfRecord.wi = its.toLocal(-ray.d);
                     bsdfRecord.uv = its.uv;
-                    // BSDFQueryRecord bsdfRecord(its.toLocal(-ray.d), its.uv);
+                    if(its.mesh->getBSDF()->isDispersive()){
+                        int index = dis(gen);
+                        float lambda = wavelength[index];
+                        bsdfRecord.wavelength = lambda;
+                    }
                     Color3f color = its.mesh->getBSDF()->sample(bsdfRecord, sampler->next2D());
                     if(its.mesh->getBSDF()->isDiffuse()) {
                         PointCloud::Point photon;
@@ -190,32 +189,20 @@ public:
                         photon.y = its.p.y();
                         photon.z = its.p.z();
                         photon.wi = ray.d;
-                        // cout << "flux: " << flux.r() << " " << flux.g() << " " << flux.b() << endl;
-                        // cout << "throughput: " << throughput.r() << " " << throughput.g() << " " << throughput.b() << endl;
-                        photon.power = flux * throughput;
-                        // cout << "photon power: " << photon.power.r() << " " << photon.power.g() << " " << photon.power.b() << endl;
-                       
+                        photon.power = flux * throughput;                   
                     
                         throughput *= color;
                         cloud.pts.push_back(photon);
-                        // cout << "Photon emitted" << endl;
                     } 
 
                     if(sampler->next1D() < p_absorb){
-                        // cout << "Photon absorbed" << endl;
-                        // cout << "n_emitted" << n_emitted << endl;
                         break;
                     }
 
                     // Next ray
                   
                     Ray3f nextRay = Ray3f(its.p, its.toWorld(bsdfRecord.wo), Epsilon, INFINITY);
-                    // cout << "BSDF record: wi = " << bsdfRecord.wi.transpose() << ", wo = " << bsdfRecord.wo.transpose() << ", uv = " << bsdfRecord.uv.transpose() << endl;
-                    // cout << "fucking wo= " << bsdfRecord.wo.transpose() << endl;
-                    ray = nextRay;
-                    // cout << "asignación " << ray.d.transpose() << endl;
-                    // cout << "Next ray" << endl;
-                    
+                    ray = nextRay;                               
                 }
                 n_emitted++;
             }
@@ -234,11 +221,9 @@ public:
             while(n_emitted < caustic_photon_count){
                 // Generate a ray from the emitter
 
-                // Generate a ray from the emitter
                 Point3f p = emitter->samplePosition(sampler->next2D());
                 Vector3f d = emitter->sampleDirection(p, sampler.get());
                 
-                // cout << "emitterRecord.ref = " << emitterRecord.ref << endl;
                 Ray3f ray(p,d);
                 Color3f throughput = Color3f(1.0f);
                 const BSDF *bsdf = nullptr;
@@ -246,7 +231,6 @@ public:
                 
                 Intersection its;
                 if(!scene->rayIntersect(ray, its)){
-                    // cout<<"No intersection"<<endl;
                     continue;
                 }
                 bsdf = its.mesh->getBSDF();
@@ -263,44 +247,26 @@ public:
                     BSDFQueryRecord bsdfRecord(its.toLocal(-ray.d), its.uv);
                     bsdf = its.mesh->getBSDF();
                     if(bsdf->isDiffuse()) {
-                        break; 
+                        break;
                     }
                     if(!its.mesh->getBSDF()->isDispersive()) {
-                            
                         bsdf->sample(bsdfRecord, sampler->next2D());
                     } else {
                         // Choose a random wavelength
                         int index = dis(gen);
-                        // cout << "index = " << index << endl;
                         float lambda = wavelength[index];
-                        // wavelengthCount[index]++;
-
-                        // // cout << "lambda = " << index << endl;
+            
                         bsdfRecord.wavelength = lambda;
                         bsdf->sample(bsdfRecord, sampler->next2D());
                         Color3f c =  wavelengthToRGB(lambda);
-                        // Color3f c;
-                        // if (index == 0) {
-                        //     c = Color3f(1.0f, 0.0f, 0.0f);
-                        // } else if (index == 1) {
-                        //     c = Color3f(0.0f, 1.0f, 0.0f);
-                        // } else if (index == 2) {
-                        //     c = Color3f(0.0f, 0.0f, 1.0f);
-                        // } else {
-                        //     cout << "Error" << endl;
-                        // }
+                        
                         throughput = !hasDispersiveIteraction ? c : throughput ;
                         hasDispersiveIteraction = true;
-
-                        // cout << "c = " << c.r() << " " << c.g() << " " << c.b() << endl;
                     }
                     if(sampler->next1D() < p_absorb){
-                        // cout << "Photon absorbed" << endl;
-                        // cout << "n_emitted" << n_emitted << endl;
                         causticFound = false;
                         break;
                     }
-                    // bsdf->sample(bsdfRecord, sampler->next2D());
                     ray = Ray3f(its.p, its.toWorld(bsdfRecord.wo), Epsilon, INFINITY);
                     
                 }          
@@ -311,16 +277,11 @@ public:
                     photon.y = its.p.y();
                     photon.z = its.p.z();
                     photon.wi = ray.d;
-                    // cout << "flux: " << flux.r() << " " << flux.g() << " " << flux.b() << endl;
-                    // cout << "throughput: " << throughput.r() << " " << throughput.g() << " " << throughput.b() << endl;
                     photon.power = flux * throughput;
-                    // cout << "photon power: " << photon.power.r() << " " << photon.power.g() << " " << photon.power.b() << endl;
                     
                     caustic_cloud.pts.push_back(photon);
-                    // cout << "Photon emitted" << endl;
                     
                     n_emitted++;
-                    // cout << "n_emitted" << n_emitted  << "/" << caustic_photon_count << endl;
                 }
                 
             }
@@ -333,22 +294,17 @@ public:
         /* kd-tree */
         index.buildIndex();
         caustic_index.buildIndex();
-
-        // print percentage of each wavelength
-        // for(int i = 0; i < 16; i++) {
-        //     cout << "wavelength " << wavelength[i] << " nm: " << wavelengthCount[i] * 100 / max_photon_count << "%" << endl;
-        // }
     }
 
     DispersiveIntegrator(const PropertyList &props)
             : index(3 /*dim*/, cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */)),
                 caustic_index(3 /*dim*/, caustic_cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */)){
 
-        max_photon_count = props.getInteger("photon_count", 10000000);
+        max_photon_count = props.getInteger("photon_count", 1000000);
         rad_estimation_count = props.getInteger("rad_estimation_count", 10000);
         rad_estimation_radius = props.getFloat("rad_estimation_radius", 0.0015);
         caustic_rad_estimation_radius = props.getFloat("caustic_rad_estimation_radius", 0.0015);
-        caustic_max_photon_count = props.getInteger("caustic_photon_count", 10000000);
+        caustic_max_photon_count = props.getInteger("caustic_photon_count", 1000000);
         caustic_rad_estimation_count = props.getInteger("caustic_rad_estimation_count", 10000);
     }
 
@@ -444,16 +400,12 @@ public:
         BSDFQueryRecord x_bRec = BSDFQueryRecord(its.toLocal(-wi), its.uv);
         const BSDF *x_BSDF = its.mesh->getBSDF();
         Color3f c = x_BSDF->sample(x_bRec, sampler->next2D());
-        // cout << "c = " << c.r() << " " << c.g() << " " << c.b() << endl;
         for(std::pair<size_t, float> photon : ret_matches){
             float gaussianKenel = alpha * (1 - ((1- 1 / exp(beta* photon.second * photon.second / (radius_2*2)))/(1-1/exp(beta))));
             Lo += c * photons->pts[photon.first].power * gaussianKenel;
         }
-        // cout << "Lo = " << Lo << endl;
-        
+       
         return Lo;
-
-
     }
 
     std::string toString() const {
