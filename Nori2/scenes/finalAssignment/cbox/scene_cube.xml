@@ -42,7 +42,7 @@
 		<string name="filename" value="meshes/light.obj"/>
 
 		<emitter type="area">
-			<color name="radiance" value="40 40 40"/>
+			<color name="radiance" value="300000 300000 300000"/>
 		</emitter>
 	</mesh>
 	<mesh type="obj">

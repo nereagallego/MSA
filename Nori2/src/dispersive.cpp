@@ -40,7 +40,6 @@ public:
         }
         else
         {
-            // double new_m_intIOR = calculateRefractiveIndex(bRec.wavelength);
 
             bRec.wo = Reflectance::refract(bRec.wi, Vector3f(0,0,1), m_extIOR, new_m_intIOR);            
             if (cosThetaI < 0.0f) 
@@ -70,11 +69,6 @@ private:
 
     double calculateRefractiveIndex(double wavelength) const {
         double lambdaSquared = std::pow(wavelength, 2);
-
-        // DIAMOND
-        // double B1 = 4.658;
-        // double C1 = 112.5;
-        // double refractiveIndex = std::sqrt(1 + (B1 * lambdaSquared) / (lambdaSquared - C1 * C1));
 
         // Regractive index from 2.4 to 3 for 380nm to 750nm
         double refractiveIndex = 2.4 + (wavelength - 380) * (4 - 2.4) / (750 - 380);
