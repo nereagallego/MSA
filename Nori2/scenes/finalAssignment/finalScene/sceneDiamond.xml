@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+<scene>
+	<integrator type="dispersive_integrator"/>
+	<sampler type="independent">
+		<integer name="sampleCount" value="32"/>
+	</sampler>
+	<camera type="perspective">
+		<float name="fov" value="19.939412225153244"/>
+		<float name="nearClip" value="0.10000000149011612"/>
+		<float name="farClip" value="100.0"/>
+		<integer name="width" value="1920"/>
+		<integer name="height" value="1080"/>
+		<transform name="toWorld">
+			<scale value="1.000000 1.000000 -1.000000"/>
+			<matrix value="1.0,2.085012680764402e-15,-1.7484556735780643e-07,-0.01633080095052719,-1.7484555314695172e-07,1.1924882414859894e-08,-1.0000001192092896,-17.98656463623047,0.0,1.0000001192092896,1.1924882414859894e-08,0.3592751622200012,0.0,0.0,0.0,1.0"/>
+		</transform>
+	</camera>
+
+	<emitter type="pointlight">
+		<point name="position" value="-0.035632,-0.711530,1.403451"/>
+		<color name="power" value="10.000000,10.000000,10.000000"/>
+	</emitter>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/leftWall.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.630 0.065 0.05"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/rightWall.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.630 0.065 0.05"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/backWall.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.630 0.065 0.05"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/ceiling.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.630 0.065 0.05"/>
+		</bsdf>
+	</mesh>
+	
+	<mesh type="obj">
+		<string name="filename" value="meshes/floor.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.630 0.065 0.05"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/diamond.obj"/>
+		<bsdf type="dispersive" />
+	</mesh>
+</scene>
