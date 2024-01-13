@@ -300,11 +300,11 @@ public:
             : index(3 /*dim*/, cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */)),
                 caustic_index(3 /*dim*/, caustic_cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */)){
 
-        max_photon_count = props.getInteger("photon_count", 10000000);
+        max_photon_count = props.getInteger("photon_count", 100000000);
         rad_estimation_count = props.getInteger("rad_estimation_count", 10000);
         rad_estimation_radius = props.getFloat("rad_estimation_radius", 0.0015);
         caustic_rad_estimation_radius = props.getFloat("caustic_rad_estimation_radius", 0.0015);
-        caustic_max_photon_count = props.getInteger("caustic_photon_count", 10000000);
+        caustic_max_photon_count = props.getInteger("caustic_photon_count", 100000000);
         caustic_rad_estimation_count = props.getInteger("caustic_rad_estimation_count", 10000);
     }
 
