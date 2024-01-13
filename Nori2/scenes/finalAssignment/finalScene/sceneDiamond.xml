@@ -49,46 +49,34 @@
 			<color name="albedo" value="0.30 0.30 0.30"/>
 		</bsdf>
 	</mesh>
-	<mesh type="obj">
+	<!-- <mesh type="obj">
 		<string name="filename" value="meshes/rectangle.obj"/>
 		<bsdf type="diffuse">
 			<color name="albedo" value="0.725 0.71 0.68"/>
 		</bsdf>
-	</mesh>
+	</mesh> -->
 	<mesh type="obj">
 		<string name="filename" value="meshes/diamond1.obj"/>
 		<bsdf type="dispersive"/>
 	</mesh>
 	<mesh type="obj">
-		<string name="filename" value="meshes/diamond2.obj"/>
+		<string name="filename" value="meshes/diamond2_2.obj"/>
 		<bsdf type="dispersive"/>
 	</mesh>
 	<mesh type="obj">
 		<string name="filename" value="meshes/diamond3.obj"/>
 		<bsdf type="dispersive"/>
 	</mesh>
-	<!-- <mesh type="obj">
-		<string name="filename" value="meshes/light_ceiling001.obj"/>
 
-		<emitter type="area">
-			<color name="radiance" value="30000000 30000000 30000000"/>
-		</emitter>
-	</mesh> -->
-	<mesh type="obj">
+	<!-- <mesh type="obj">
 		<string name="filename" value="meshes/light_ceiling002.obj"/>
 
 		<emitter type="area">
 			<color name="radiance" value="150000000 150000000 150000000"/>
 		</emitter>
-	</mesh>
-	<!-- <mesh type="obj">
-		<string name="filename" value="meshes/light_ceiling003.obj"/>
-
-		<emitter type="area">
-			<color name="radiance" value="30000000 30000000 30000000"/>
-		</emitter>
 	</mesh> -->
-	<mesh type="obj">
+
+	<!-- <mesh type="obj">
 		<string name="filename" value="meshes/light_left001.obj"/>
 
 		<emitter type="area">
@@ -115,5 +103,39 @@
 		<emitter type="area">
 			<color name="radiance" value="60000000 60000000 60000000"/>
 		</emitter>
-	</mesh>
+	</mesh> -->
+
+	<!-- LEFT -->
+	<!-- <emitter type="pointlight">
+		<point name="position" value="2.0, 0.351607, 0.556355"/>
+		<color name="radiance" value="100000,100000,100000"/>
+	</emitter>
+
+	<emitter type="pointlight">
+		<point name="position" value="2.492000, -0.209683, -0.498521"/>
+		<color name="radiance" value="100000,100000,100000"/>
+	</emitter> -->
+
+	<!-- RIGHT -->
+	<!-- <emitter type="pointlight">
+		<point name="position" value="-2.0, 0.351607, 0.556355"/>
+		<color name="radiance" value="100000,100000,100000"/>
+	</emitter>
+
+	<emitter type="pointlight">
+		<point name="position" value="-2.543500, -0.382327, -0.144611"/>
+		<color name="radiance" value="100000,100000,100000"/>
+	</emitter> -->
+
+	<!-- CEILING -->
+	<emitter type="pointlight">
+		<point name="position" value="-0.068301, -0.875521, 1.782000"/>
+		<color name="radiance" value="600000,600000,600000"/>
+	</emitter> 
+
+	<!-- IN FRONT -->
+	<emitter type="pointlight">
+		<point name="position" value="0.141684, -1.303018, 0.425591"/>
+		<color name="radiance" value="600000,600000,600000"/>
+	</emitter> 
 </scene>
